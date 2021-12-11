@@ -37,6 +37,7 @@ namespace TextProcessing.Tests
 
         public bool MatchTime(string text)
         {
+            new NodaTime.LocalTime();
             return Regex.IsMatch(text, @"^\d{1,2}:\d{2}(am|pm)?$");
         }
     }

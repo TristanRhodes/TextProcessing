@@ -87,6 +87,20 @@ namespace TextProcessing.Tests
         }
 
         [Theory]
+        [InlineData("sun", DayOfWeek.Sunday)]
+        [InlineData("Monday", DayOfWeek.Monday)]
+        [InlineData("mon", DayOfWeek.Monday)]
+        [InlineData("Thurs", DayOfWeek.Thursday)]
+        [InlineData("thursday", DayOfWeek.Thursday)]
+        [InlineData("Fri", DayOfWeek.Friday)]
+        [InlineData("Sat", DayOfWeek.Saturday)]
+        public void DayMatch(string text, DayOfWeek dayOfWeek)
+        {
+            Convert(text)
+                .Should().Be(dayOfWeek);
+        }
+
+        [Theory]
         [InlineData("nop3")]
         [InlineData("invalid")]
         [InlineData("123")]

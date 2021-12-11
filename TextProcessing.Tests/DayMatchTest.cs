@@ -6,6 +6,7 @@ namespace TextProcessing.Tests
 {
     public class DayMatchTest
     {
+
         [Theory]
         [InlineData("mon")]
         [InlineData("Mon")]
@@ -13,9 +14,10 @@ namespace TextProcessing.Tests
         [InlineData("Monday")]
         public void Monday(string text)
         {
-            Regex.IsMatch(text, "^([Mm]on(day)?)$")
+            Regex.IsMatch(text, "^[Mm]on(day)?$")
                 .Should().BeTrue();
         }
+
 
         [Theory]
         [InlineData("tue")]
@@ -24,7 +26,7 @@ namespace TextProcessing.Tests
         [InlineData("Tuesday")]
         public void Tuesday(string text)
         {
-            Regex.IsMatch(text, "^([Tt]ue(sday)?)$")
+            Regex.IsMatch(text, "^[Tt]ue(sday)?$")
                 .Should().BeTrue();
         }
 
@@ -35,7 +37,7 @@ namespace TextProcessing.Tests
         [InlineData("Wednesday")]
         public void Wednesday(string text)
         {
-            Regex.IsMatch(text, "^([Ww]ed(nesday)?)$")
+            Regex.IsMatch(text, "^[Ww]ed(nesday)?$")
                 .Should().BeTrue();
         }
 
@@ -48,7 +50,7 @@ namespace TextProcessing.Tests
         [InlineData("Thursday")]
         public void Thursday(string text)
         {
-            Regex.IsMatch(text, "^([Tt]hu(rs(day)?)?)$")
+            Regex.IsMatch(text, "^[Tt]hu(rs(day)?)?$")
                 .Should().BeTrue();
         }
 
@@ -59,7 +61,7 @@ namespace TextProcessing.Tests
         [InlineData("Friday")]
         public void Friday(string text)
         {
-            Regex.IsMatch(text, "^([Ff]ri(day)?)$")
+            Regex.IsMatch(text, "^[Ff]ri(day)?$")
                 .Should().BeTrue();
         }
 
@@ -70,7 +72,7 @@ namespace TextProcessing.Tests
         [InlineData("Saturday")]
         public void Saturday(string text)
         {
-            Regex.IsMatch(text, "^([Ss]at(urday)?)$")
+            Regex.IsMatch(text, "^[Ss]at(urday)?$")
                 .Should().BeTrue();
         }
 
@@ -81,7 +83,7 @@ namespace TextProcessing.Tests
         [InlineData("Sunday")]
         public void Sunday(string text)
         {
-            Regex.IsMatch(text, "^([Ss]un(day)?)$")
+            Regex.IsMatch(text, "^[Ss]un(day)?$")
                 .Should().BeTrue();
         }
     }

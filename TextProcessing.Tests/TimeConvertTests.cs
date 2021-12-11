@@ -18,7 +18,7 @@ namespace TextProcessing.Tests
         [InlineData("20:30", 20, 30)]
         public void TimeConvertTest(string text, int hour, int min)
         {
-            MatchTime(text)
+            ConvertTime(text)
                 .Should().Be(new LocalTime(hour, min));
         }
 
@@ -32,11 +32,11 @@ namespace TextProcessing.Tests
         [InlineData("20:30ampm")]
         public void InvalidTimeConvertTest(string text)
         {
-            MatchTime(text)
+            ConvertTime(text)
                 .Should().BeNull();
         }
 
-        public LocalTime? MatchTime(string token)
+        public LocalTime? ConvertTime(string token)
         {
             var match = Regex.Match(token, @"^(?<hr>\d{1,2}):(?<min>\d{2})((?<am>am)|(?<pm>pm))?$");
             if (!match.Success)
@@ -44,18 +44,22 @@ namespace TextProcessing.Tests
 
             var hour = int.Parse(match.Groups["hr"].Value);
             var min = int.Parse(match.Groups["min"].Value);
-            var am = match.Groups["am"];
-            var pm = match.Groups["pm"];
+            var am = match.Groups["am"].Success;
+            var pm = match.Groups["pm"].Success;
+            var twentyFourHr = !am && !pm;
 
-            if (!am.Success && !pm.Success)
+            if (min > 60)
+                throw new NotSupportedException($"Bad Format: {token}");
+
+            if (twentyFourHr && hour < 24)
             {
                 return new LocalTime(hour, min);
             }
-            else if (am.Success)
+            else if (am && hour < 12)
             {
                 return new LocalTime(hour, min);
             }
-            else if (pm.Success)
+            else if (pm && hour < 12)
             {
                 return new LocalTime(hour + 12, min);
             }
