@@ -16,4 +16,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\TextProcessing\TextProcessing.csproj" />
+  </ItemGroup>
+
 </Project>
