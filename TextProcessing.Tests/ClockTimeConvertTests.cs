@@ -6,7 +6,7 @@ using Xunit;
 
 namespace TextProcessing.Tests
 {
-    public class TimeConvertTests
+    public class ClockTimeConvertTests
     {
         [Theory]
         [InlineData("8:30am", 8, 30)]

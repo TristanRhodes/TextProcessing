@@ -9,16 +9,16 @@ namespace TextProcessing.Tokenisers
 {
     public class DayTokeniser : ITokeniser
     {
-        string regex = "^(?<Monday>[Mm]on(day)?)|(?<Tuesday>[Tt]ue(sday)?)|(?<Wednesday>[Ww]ed(nesday)?)|(?<Thursday>[Tt]hu(rs(day)?)?)|(?<Friday>[Ff]ri(day)?)|(?<Saturday>[Ss]at(urday)?)|(?<Sunday>[Ss]un(day)?)$";
+        Regex regex = new Regex("^(?<Monday>[Mm]on(day)?)|(?<Tuesday>[Tt]ue(sday)?)|(?<Wednesday>[Ww]ed(nesday)?)|(?<Thursday>[Tt]hu(rs(day)?)?)|(?<Friday>[Ff]ri(day)?)|(?<Saturday>[Ss]at(urday)?)|(?<Sunday>[Ss]un(day)?)$");
 
         public bool IsMatch(string token)
         {
-            return Regex.IsMatch(token, regex);
+            return regex.IsMatch(token);
         }
 
         public Token Tokenise(string token)
         {
-            var match = Regex.Match(token, regex);
+            var match = regex.Match(token);
             if (!match.Success)
                 throw new NotSupportedException($"Bad Format: {token}");
 

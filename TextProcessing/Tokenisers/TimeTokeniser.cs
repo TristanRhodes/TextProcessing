@@ -8,18 +8,18 @@ using System.Threading.Tasks;
 
 namespace TextProcessing.Tokenisers
 {
-    public class TimeTokeniser : ITokeniser
+    public class ClockTimeTokeniser : ITokeniser
     {
-        string regex = @"^(?<hr>\d{1,2}):(?<min>\d{2})((?<am>am)|(?<pm>pm))?$";
+        Regex regex = new Regex(@"^(?<hr>[01]?\d|2[0-4]):(?<min>[0-5]\d|60)((?<am>am)|(?<pm>pm))?$");
 
         public bool IsMatch(string token)
         {
-            return Regex.IsMatch(token, regex);
+            return regex.IsMatch(token);
         }
 
         public Token Tokenise(string token)
         {
-            var match = Regex.Match(token, regex);
+            var match = regex.Match(token);
             if (!match.Success)
                 return null;
 
@@ -29,20 +29,17 @@ namespace TextProcessing.Tokenisers
             var pm = match.Groups["pm"].Success;
             var twentyFourHr = !am && !pm;
 
-            if (min > 60)
-                throw new NotSupportedException($"Bad Format: {token}");
-
-            if (twentyFourHr && hour < 24)
+            if (twentyFourHr)
             {
                 return new Time(token, new LocalTime(hour, min));
             }
-            else if (am && hour < 12)
+            if (am)
             {
-                return new Time(token, new LocalTime(hour, min));
+                return new Time(token, new LocalTime(hour == 12 ? 0 : hour, min));
             }
-            else if (pm && hour < 12)
+            else if (pm)
             {
-                return new Time(token, new LocalTime(hour + 12, min));
+                return new Time(token, new LocalTime(hour == 12 ? 12 : hour + 12, min));
             }
 
             throw new NotSupportedException($"Bad Format: {token}");

@@ -4,7 +4,7 @@ using Xunit;
 
 namespace TextProcessing.Tests
 {
-    public class TimeMatchTests
+    public class ClockTimeMatchTests
     {
         [Theory]
         // 12 Hr

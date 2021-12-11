@@ -8,7 +8,7 @@ namespace TextProcessing.Tests
 {
     public class ClockTimeTokeniserTests
     {
-        private TimeTokeniser _tokeniser = new TimeTokeniser();
+        private ClockTimeTokeniser _tokeniser = new ClockTimeTokeniser();
 
         [Theory]
         [InlineData("8:30am", 8, 30)]
@@ -18,6 +18,7 @@ namespace TextProcessing.Tests
         [InlineData("8:30", 8, 30)]
         [InlineData("08:30", 8, 30)]
         [InlineData("20:30", 20, 30)]
+        [InlineData("18:30", 18, 30)]
         public void TimeConvertTest(string text, int hour, int min)
         {
             _tokeniser.IsMatch(text)
@@ -28,6 +29,15 @@ namespace TextProcessing.Tests
                 .Should().BeOfType<Time>()
                 .Subject.LocalTime
                 .Should().Be(new LocalTime(hour, min));
+        }
+
+        [Theory]
+        [InlineData("81:30am")]
+        [InlineData("08:62am")]
+        public void BadTimeConvertTest(string text)
+        {
+            _tokeniser.IsMatch(text)
+                .Should().BeFalse();
         }
 
         [Theory]
