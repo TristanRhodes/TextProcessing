@@ -23,15 +23,15 @@ namespace TextProcessing
     /// <summary>
     /// Represents an Unknown token value.
     /// </summary>
-    public class Unknown : Token
+    public class UnknownToken : Token
     {
-        public Unknown(string value)
+        public UnknownToken(string value)
             : base(value) { }
     }
 
-    public class Day : Token
+    public class DayToken : Token
     {
-        public Day(string value, DayOfWeek dayOfWeek)
+        public DayToken(string value, DayOfWeek dayOfWeek)
             : base(value) 
         {
             DayOfWeek = dayOfWeek;
@@ -40,9 +40,9 @@ namespace TextProcessing
         public DayOfWeek DayOfWeek { get; }
     }
 
-    public class Time : Token
+    public class TimeToken : Token
     {
-        public Time(string value, LocalTime localTime)
+        public TimeToken(string value, LocalTime localTime)
             : base(value)
         {
             LocalTime = localTime;
@@ -51,15 +51,21 @@ namespace TextProcessing
         public LocalTime LocalTime { get; set; }
     }
 
-    public class To : Token
+    /// <summary>
+    /// Represents a recognised word
+    /// </summary>
+    public class WordToken : Token
     {
-        public To(string value)
+        public WordToken(string value)
             : base(value) { }
     }
 
-    public class Hyphen : Token
+    /// <summary>
+    /// Represents a recognised symbol
+    /// </summary>
+    public class SymbolToken : Token
     {
-        public Hyphen(string value)
+        public SymbolToken(string value)
             : base(value) { }
     }
 }

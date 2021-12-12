@@ -27,8 +27,15 @@ namespace TextProcessing
                 var matches = _tokenisers
                     .Where(t => t.IsMatch(str));
 
-                if (matches.Count() > 1)
+                var count = matches.Count();
+                if (count > 1)
                     throw new ApplicationException($"Ambiguous match on token '{str}'. Collisions: '{string.Join("', '", matches)}'");
+
+                if (count == 0)
+                {
+                    tokens[i] = new UnknownToken(str);
+                    continue;
+                }
 
                 tokens[i] = matches
                     .Single()

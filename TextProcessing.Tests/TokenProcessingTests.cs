@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TextProcessing.Tokenisers;
 using Xunit;
@@ -35,12 +36,12 @@ namespace TextProcessing.Tests
                 .Tokenise(parts);
 
             tokens[0]
-                .Should().BeOfType<Day>()
+                .Should().BeOfType<DayToken>()
                 .Subject.DayOfWeek
                 .Should().Be(weekDay);
 
             tokens[1]
-                .Should().BeOfType<Time>()
+                .Should().BeOfType<TimeToken>()
                 .Subject.LocalTime
                 .Should().Be(new LocalTime(hour, min));
         }
@@ -70,9 +71,11 @@ namespace TextProcessing.Tests
                 .Tokenise(parts);
 
             tokens[0]
-                .Should().BeOfType<Time>()
+                .Should().BeOfType<TimeToken>()
                 .Subject.LocalTime
                 .Should().Be(new LocalTime(hour, min));
         }
+
+
     }
 }

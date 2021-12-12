@@ -23,25 +23,25 @@ namespace TextProcessing.Tokenisers
                 throw new NotSupportedException($"Bad Format: {token}");
 
             if (match.Groups["Monday"].Success)
-                return new Day(token, DayOfWeek.Monday);
+                return new DayToken(token, DayOfWeek.Monday);
 
             if (match.Groups["Tuesday"].Success)
-                return new Day(token, DayOfWeek.Tuesday);
+                return new DayToken(token, DayOfWeek.Tuesday);
 
             if (match.Groups["Wednesday"].Success)
-                return new Day(token, DayOfWeek.Wednesday);
+                return new DayToken(token, DayOfWeek.Wednesday);
 
             if (match.Groups["Thursday"].Success)
-                return new Day(token, DayOfWeek.Thursday);
+                return new DayToken(token, DayOfWeek.Thursday);
 
             if (match.Groups["Friday"].Success)
-                return new Day(token, DayOfWeek.Friday);
+                return new DayToken(token, DayOfWeek.Friday);
 
             if (match.Groups["Saturday"].Success)
-                return new Day(token, DayOfWeek.Saturday);
+                return new DayToken(token, DayOfWeek.Saturday);
 
             if (match.Groups["Sunday"].Success)
-                return new Day(token, DayOfWeek.Sunday);
+                return new DayToken(token, DayOfWeek.Sunday);
 
             throw new NotSupportedException($"Bad Format: {token}");
         }

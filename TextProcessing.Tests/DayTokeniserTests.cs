@@ -29,7 +29,7 @@ namespace TextProcessing.Tests
 
             _tokeniser
                 .Tokenise(text)
-                .Should().BeOfType<Day>()
+                .Should().BeOfType<DayToken>()
                 .Subject.DayOfWeek
                 .Should().Be(dayOfWeek);
         }
