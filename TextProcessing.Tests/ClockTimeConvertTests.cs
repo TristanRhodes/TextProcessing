@@ -36,6 +36,24 @@ namespace TextProcessing.Tests
                 .Should().BeNull();
         }
 
+        [Theory]
+        // 12 hr
+        [InlineData("13:00am")]
+        [InlineData("13:01am")]
+        [InlineData("13:00pm")]
+        [InlineData("13:01pm")]
+        // 24 hr
+        [InlineData("24:00")]
+        [InlineData("24:01")]
+        [InlineData("25:00")]
+        [InlineData("25:01")]
+        public void InvalidTimeTest(string text)
+        {
+            AssertionExtensions
+                .Invoking(this, t => ConvertTime(text))
+                .Should().Throw<NotSupportedException>();
+        }
+
         public LocalTime? ConvertTime(string token)
         {
             var match = Regex.Match(token, @"^(?<hr>\d{1,2}):(?<min>\d{2})((?<am>am)|(?<pm>pm))?$");
