@@ -10,7 +10,7 @@ namespace TextProcessing.Tokenisers
 {
     public class ClockTimeTokeniser : ITokeniser
     {
-        Regex regex = new Regex(@"^(?<hr>[01]?\d|2[0-4]):(?<min>[0-5]\d|60)((?<am>am)|(?<pm>pm))?$");
+        Regex regex = new Regex(@"^(((?<hr>[01]?\d|2[0-3]):(?<min>[0-5]\d|60))|((?<hr>([0]?\d)|1[0-2]):(?<min>[0-5]\d|60)((?<am>am)|(?<pm>pm))))?$");
 
         public bool IsMatch(string token)
         {

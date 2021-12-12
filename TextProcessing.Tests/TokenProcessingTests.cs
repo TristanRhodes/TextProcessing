@@ -76,6 +76,26 @@ namespace TextProcessing.Tests
                 .Should().Be(new LocalTime(hour, min));
         }
 
+        [Theory]
+        // 12 hr
+        [InlineData("13:00am")]
+        [InlineData("13:01am")]
+        [InlineData("13:00pm")]
+        [InlineData("13:01pm")]
+        // 24 hr
+        [InlineData("24:00")]
+        [InlineData("24:01")]
+        [InlineData("25:00")]
+        [InlineData("25:01")]
+        public void InvalidTimeTest(string text)
+        {
+            var parts = text.Split(" ");
 
+            var tokens = _tokenProcessor
+                .Tokenise(parts);
+
+            tokens[0]
+                .Should().BeOfType<UnknownToken>();
+        }
     }
 }
