@@ -9,63 +9,25 @@ namespace TextProcessing
 {
     public class Token
     {
-        public Token(string value)
+        public Token(string text)
+        {
+            Text = text;
+        }
+
+        public string Text { get; }
+    }
+
+    public class Token<T> : Token
+    {
+        public Token(string text, T value) 
+            : base(text)
         {
             Value = value;
         }
 
-        public string Value { get; }
+        public T Value { get; }
 
         public override string ToString() =>
             $"{this.GetType().Name}: {Value}";
-    }
-
-    /// <summary>
-    /// Represents an Unknown token value.
-    /// </summary>
-    public class UnknownToken : Token
-    {
-        public UnknownToken(string value)
-            : base(value) { }
-    }
-
-    public class DayToken : Token
-    {
-        public DayToken(string value, DayOfWeek dayOfWeek)
-            : base(value) 
-        {
-            DayOfWeek = dayOfWeek;
-        }
-
-        public DayOfWeek DayOfWeek { get; }
-    }
-
-    public class TimeToken : Token
-    {
-        public TimeToken(string value, LocalTime localTime)
-            : base(value)
-        {
-            LocalTime = localTime;
-        }
-
-        public LocalTime LocalTime { get; set; }
-    }
-
-    /// <summary>
-    /// Represents a recognised word
-    /// </summary>
-    public class WordToken : Token
-    {
-        public WordToken(string value)
-            : base(value) { }
-    }
-
-    /// <summary>
-    /// Represents a recognised symbol
-    /// </summary>
-    public class SymbolToken : Token
-    {
-        public SymbolToken(string value)
-            : base(value) { }
     }
 }

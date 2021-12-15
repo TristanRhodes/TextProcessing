@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TextProcessing.Tokenisers
 {
-    public class DayTokeniser : ITokeniser
+    public class WeekDayTokeniser : ITokeniser
     {
         Regex regex = new Regex("^(?<Monday>[Mm]on(day)?)|(?<Tuesday>[Tt]ue(sday)?)|(?<Wednesday>[Ww]ed(nesday)?)|(?<Thursday>[Tt]hu(rs(day)?)?)|(?<Friday>[Ff]ri(day)?)|(?<Saturday>[Ss]at(urday)?)|(?<Sunday>[Ss]un(day)?)$");
 
@@ -23,25 +23,25 @@ namespace TextProcessing.Tokenisers
                 throw new NotSupportedException($"Bad Format: {token}");
 
             if (match.Groups["Monday"].Success)
-                return new DayToken(token, DayOfWeek.Monday);
+                return new Token<DayOfWeek>(token, DayOfWeek.Monday);
 
             if (match.Groups["Tuesday"].Success)
-                return new DayToken(token, DayOfWeek.Tuesday);
+                return new Token<DayOfWeek>(token, DayOfWeek.Tuesday);
 
             if (match.Groups["Wednesday"].Success)
-                return new DayToken(token, DayOfWeek.Wednesday);
+                return new Token<DayOfWeek>(token, DayOfWeek.Wednesday);
 
             if (match.Groups["Thursday"].Success)
-                return new DayToken(token, DayOfWeek.Thursday);
+                return new Token<DayOfWeek>(token, DayOfWeek.Thursday);
 
             if (match.Groups["Friday"].Success)
-                return new DayToken(token, DayOfWeek.Friday);
+                return new Token<DayOfWeek>(token, DayOfWeek.Friday);
 
             if (match.Groups["Saturday"].Success)
-                return new DayToken(token, DayOfWeek.Saturday);
+                return new Token<DayOfWeek>(token, DayOfWeek.Saturday);
 
             if (match.Groups["Sunday"].Success)
-                return new DayToken(token, DayOfWeek.Sunday);
+                return new Token<DayOfWeek>(token, DayOfWeek.Sunday);
 
             throw new NotSupportedException($"Bad Format: {token}");
         }

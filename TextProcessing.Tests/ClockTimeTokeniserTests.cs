@@ -26,8 +26,8 @@ namespace TextProcessing.Tests
 
             _tokeniser
                 .Tokenise(text)
-                .Should().BeOfType<TimeToken>()
-                .Subject.LocalTime
+                .Should().BeOfType<Token<LocalTime>>()
+                .Subject.Value
                 .Should().Be(new LocalTime(hour, min));
         }
 

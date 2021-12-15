@@ -12,7 +12,7 @@ namespace TextProcessing.Tests
 {
     public class DayTokeniserTests
     {
-        private DayTokeniser _tokeniser = new DayTokeniser();
+        private WeekDayTokeniser _tokeniser = new WeekDayTokeniser();
 
         [Theory]
         [InlineData("sun", DayOfWeek.Sunday)]
@@ -29,8 +29,8 @@ namespace TextProcessing.Tests
 
             _tokeniser
                 .Tokenise(text)
-                .Should().BeOfType<DayToken>()
-                .Subject.DayOfWeek
+                .Should().BeOfType<Token<DayOfWeek>>()
+                .Subject.Value
                 .Should().Be(dayOfWeek);
         }
     }

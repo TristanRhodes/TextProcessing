@@ -33,7 +33,7 @@ namespace TextProcessing
 
                 if (count == 0)
                 {
-                    tokens[i] = new UnknownToken(str);
+                    tokens[i] = null;
                     continue;
                 }
 

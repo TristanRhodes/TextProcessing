@@ -31,15 +31,15 @@ namespace TextProcessing.Tokenisers
 
             if (twentyFourHr)
             {
-                return new TimeToken(token, new LocalTime(hour, min));
+                return new Token<LocalTime>(token, new LocalTime(hour, min));
             }
             if (am)
             {
-                return new TimeToken(token, new LocalTime(hour == 12 ? 0 : hour, min));
+                return new Token<LocalTime>(token, new LocalTime(hour == 12 ? 0 : hour, min));
             }
             else if (pm)
             {
-                return new TimeToken(token, new LocalTime(hour == 12 ? 12 : hour + 12, min));
+                return new Token<LocalTime>(token, new LocalTime(hour == 12 ? 12 : hour + 12, min));
             }
 
             throw new NotSupportedException($"Bad Format: {token}");
