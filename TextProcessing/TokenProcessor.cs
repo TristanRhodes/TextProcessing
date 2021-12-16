@@ -1,48 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace TextProcessing
 {
     public class TokenProcessor
     {
+        Regex _splitPattern;
         IList<ITokeniser> _tokenisers;
 
-        public TokenProcessor(IEnumerable<ITokeniser> tokenisers)
+        public TokenProcessor(string splitPattern, IEnumerable<ITokeniser> tokenisers)
         {
+            _splitPattern = new Regex(splitPattern);
             _tokenisers = tokenisers.ToList();
         }
 
-        public TokenProcessor(params ITokeniser[] tokenisers)
+        public TokenProcessor(string splitPattern, params ITokeniser[] tokenisers)
         {
+            _splitPattern = new Regex(splitPattern);
             _tokenisers = tokenisers.ToList();
         }
 
-        public Token[] Tokenise(string[] tokenStrings)
+        public IEnumerable<Token> Tokenise(string inputString)
         {
-            var tokens = new Token[tokenStrings.Length];
-            for(int i=0; i<tokenStrings.Length;i++)
+            var parts = _splitPattern.Split(inputString);
+            foreach(var part in parts)
             {
-                var str = tokenStrings[i];
                 var matches = _tokenisers
-                    .Where(t => t.IsMatch(str));
+                    .Where(t => t.IsMatch(part))
+                    .Select(t => t.Tokenise(part));
 
                 var count = matches.Count();
                 if (count > 1)
-                    throw new ApplicationException($"Ambiguous match on token '{str}'. Collisions: '{string.Join("', '", matches)}'");
+                    throw new ApplicationException($"Ambiguous match on token '{part}'. Collisions: '{string.Join("', '", matches)}'");
 
-                if (count == 0)
-                {
-                    tokens[i] = null;
-                    continue;
-                }
-
-                tokens[i] = matches
-                    .Single()
-                    .Tokenise(str);
+                yield return count == 0 ?
+                    Token.Create(part) :
+                    matches.Single();
             }
-
-            return tokens;
         }
     }
 }

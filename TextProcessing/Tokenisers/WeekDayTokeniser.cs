@@ -20,30 +20,30 @@ namespace TextProcessing.Tokenisers
         {
             var match = regex.Match(token);
             if (!match.Success)
-                throw new NotSupportedException($"Bad Format: {token}");
+                throw new ArgumentException("Bad Pattern: " + token);
 
             if (match.Groups["Monday"].Success)
-                return new Token<DayOfWeek>(token, DayOfWeek.Monday);
+                return Token.Create(token, DayOfWeek.Monday);
 
             if (match.Groups["Tuesday"].Success)
-                return new Token<DayOfWeek>(token, DayOfWeek.Tuesday);
+                return Token.Create(token, DayOfWeek.Tuesday);
 
             if (match.Groups["Wednesday"].Success)
-                return new Token<DayOfWeek>(token, DayOfWeek.Wednesday);
+                return Token.Create(token, DayOfWeek.Wednesday);
 
             if (match.Groups["Thursday"].Success)
-                return new Token<DayOfWeek>(token, DayOfWeek.Thursday);
+                return Token.Create(token, DayOfWeek.Thursday);
 
             if (match.Groups["Friday"].Success)
-                return new Token<DayOfWeek>(token, DayOfWeek.Friday);
+                return Token.Create(token, DayOfWeek.Friday);
 
             if (match.Groups["Saturday"].Success)
-                return new Token<DayOfWeek>(token, DayOfWeek.Saturday);
+                return Token.Create(token, DayOfWeek.Saturday);
 
             if (match.Groups["Sunday"].Success)
-                return new Token<DayOfWeek>(token, DayOfWeek.Sunday);
+                return Token.Create(token, DayOfWeek.Sunday);
 
-            throw new NotSupportedException($"Bad Format: {token}");
+            throw new ArgumentException("Bad Pattern: " + token);
         }
     }
 }

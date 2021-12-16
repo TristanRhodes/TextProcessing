@@ -21,7 +21,7 @@ namespace TextProcessing.Tokenisers
         {
             var match = regex.Match(token);
             if (!match.Success)
-                return null;
+                throw new ArgumentException("Bad Pattern: " + token);
 
             var hour = int.Parse(match.Groups["hr"].Value);
             var min = int.Parse(match.Groups["min"].Value);
@@ -31,18 +31,18 @@ namespace TextProcessing.Tokenisers
 
             if (twentyFourHr)
             {
-                return new Token<LocalTime>(token, new LocalTime(hour, min));
+                return Token.Create(token, new LocalTime(hour, min));
             }
             if (am)
             {
-                return new Token<LocalTime>(token, new LocalTime(hour == 12 ? 0 : hour, min));
+                return Token.Create(token, new LocalTime(hour == 12 ? 0 : hour, min));
             }
             else if (pm)
             {
-                return new Token<LocalTime>(token, new LocalTime(hour == 12 ? 12 : hour + 12, min));
+                return Token.Create(token, new LocalTime(hour == 12 ? 12 : hour + 12, min));
             }
 
-            throw new NotSupportedException($"Bad Format: {token}");
+            throw new ArgumentException("Bad Pattern: " + token);
         }
     }
 }

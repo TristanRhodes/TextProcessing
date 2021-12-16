@@ -6,7 +6,6 @@ namespace TextProcessing
     public interface ITokeniser
     {
         bool IsMatch(string token);
-
         Token Tokenise(string token);
     }
 }
