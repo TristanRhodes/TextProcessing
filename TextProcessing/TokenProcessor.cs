@@ -10,12 +10,6 @@ namespace TextProcessing
         Regex _splitPattern;
         IList<ITokeniser> _tokenisers;
 
-        public TokenProcessor(string splitPattern, IEnumerable<ITokeniser> tokenisers)
-        {
-            _splitPattern = new Regex(splitPattern);
-            _tokenisers = tokenisers.ToList();
-        }
-
         public TokenProcessor(string splitPattern, params ITokeniser[] tokenisers)
         {
             _splitPattern = new Regex(splitPattern);
@@ -27,17 +21,14 @@ namespace TextProcessing
             var parts = _splitPattern.Split(inputString);
             foreach(var part in parts)
             {
-                var matches = _tokenisers
+                var match = _tokenisers
                     .Where(t => t.IsMatch(part))
-                    .Select(t => t.Tokenise(part));
+                    .Select(t => t.Tokenise(part))
+                    .FirstOrDefault();
 
-                var count = matches.Count();
-                if (count > 1)
-                    throw new ApplicationException($"Ambiguous match on token '{part}'. Collisions: '{string.Join("', '", matches)}'");
-
-                yield return count == 0 ?
+                yield return match == null ?
                     Token.Create(part) :
-                    matches.Single();
+                    match;
             }
         }
     }

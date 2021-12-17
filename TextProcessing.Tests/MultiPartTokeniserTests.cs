@@ -45,7 +45,8 @@ namespace TextProcessing.Tests
         {
             var processor = new TokenProcessor(" ",
                 new WeekDayTokeniser(),
-                new ClockTimeTokeniser());
+                new ClockTimeTokeniser(),
+                new IntegerTokeniser());
 
             var results = processor
                 .Tokenise(text)
@@ -60,7 +61,7 @@ namespace TextProcessing.Tests
             results[2].As<LocalTime>()
                 .Should().Be(new LocalTime(hour, min));
 
-            results[3].Is<string>()
+            results[3].Is<int>()
                 .Should().BeTrue();
         }
     }
