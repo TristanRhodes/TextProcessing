@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace TextProcessing.Tokenisers
 {
-    public class ClockTimeTokeniser : ITokeniser
+    public class ClockTimeTokenProcessor : ITokenProcessor
     {
         Regex regex = new Regex(@"^(((?<hr>[01]?\d|2[0-3]):(?<min>[0-5]\d|60))|((?<hr>([0]?\d)|1[0-2]):(?<min>[0-5]\d|60)((?<am>am)|(?<pm>pm))))?$");
 

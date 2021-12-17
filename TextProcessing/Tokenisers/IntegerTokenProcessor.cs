@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TextProcessing.Tokenisers
 {
-    public class IntegerTokeniser : ITokeniser
+    public class IntegerTokenProcessor : ITokenProcessor
     {
         public bool IsMatch(string token)
         {

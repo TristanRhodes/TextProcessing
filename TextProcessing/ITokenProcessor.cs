@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace TextProcessing
 {
-    public interface ITokeniser
+    public interface ITokenProcessor
     {
         bool IsMatch(string token);
         Token Tokenise(string token);

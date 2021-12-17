@@ -5,12 +5,12 @@ using System.Text.RegularExpressions;
 
 namespace TextProcessing
 {
-    public class TokenProcessor
+    public class Tokeniser
     {
         Regex _splitPattern;
-        IList<ITokeniser> _tokenisers;
+        IList<ITokenProcessor> _tokenisers;
 
-        public TokenProcessor(string splitPattern, params ITokeniser[] tokenisers)
+        public Tokeniser(string splitPattern, params ITokenProcessor[] tokenisers)
         {
             _splitPattern = new Regex(splitPattern);
             _tokenisers = tokenisers.ToList();

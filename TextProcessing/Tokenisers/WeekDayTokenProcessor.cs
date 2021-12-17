@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TextProcessing.Tokenisers
 {
-    public class WeekDayTokeniser : ITokeniser
+    public class WeekDayTokenProcessor : ITokenProcessor
     {
         Regex regex = new Regex("^(?<Monday>[Mm]on(day)?)|(?<Tuesday>[Tt]ue(sday)?)|(?<Wednesday>[Ww]ed(nesday)?)|(?<Thursday>[Tt]hu(rs(day)?)?)|(?<Friday>[Ff]ri(day)?)|(?<Saturday>[Ss]at(urday)?)|(?<Sunday>[Ss]un(day)?)$");
 

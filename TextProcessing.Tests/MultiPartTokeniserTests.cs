@@ -20,9 +20,9 @@ namespace TextProcessing.Tests
         [InlineData("Sat 12:30pm", DayOfWeek.Saturday, 12, 30)]
         public void TokenProcessing(string text, DayOfWeek weekDay, int hour, int min)
         {
-            var processor = new TokenProcessor(" ",
-                new WeekDayTokeniser(),
-                new ClockTimeTokeniser());
+            var processor = new Tokeniser(" ",
+                new WeekDayTokenProcessor(),
+                new ClockTimeTokenProcessor());
 
             var results = processor
                 .Tokenise(text)
@@ -43,10 +43,10 @@ namespace TextProcessing.Tests
         [InlineData("eeee Sat 12:30pm 112", DayOfWeek.Saturday, 12, 30)]
         public void TokenProcessingWithNoise(string text, DayOfWeek weekDay, int hour, int min)
         {
-            var processor = new TokenProcessor(" ",
-                new WeekDayTokeniser(),
-                new ClockTimeTokeniser(),
-                new IntegerTokeniser());
+            var processor = new Tokeniser(" ",
+                new WeekDayTokenProcessor(),
+                new ClockTimeTokenProcessor(),
+                new IntegerTokenProcessor());
 
             var results = processor
                 .Tokenise(text)
