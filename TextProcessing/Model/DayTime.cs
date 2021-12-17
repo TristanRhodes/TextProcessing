@@ -9,13 +9,17 @@ namespace TextProcessing.Model
 {
     public class DayTime
     {
+        public DayTime()
+        {
+        }
+
         public DayTime(DayOfWeek day, LocalTime time)
         {
             Day = day;
             LocalTime = time;
         }
 
-        public DayOfWeek Day { get; }
-        public LocalTime LocalTime { get; }
+        public DayOfWeek Day { get; set; }
+        public LocalTime LocalTime { get; set; }
     }
 }
