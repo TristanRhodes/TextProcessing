@@ -9,15 +9,48 @@ using TextProcessing.Tokenisers;
 
 namespace TextProcessing
 {
-    public abstract class Parser<T>
+    public delegate ParseResult Selector<T>(T entity, Position position);
+
+    public interface IParser<T>
     {
-        public abstract ParseResult<T> Parse(Position position);
+        bool IsMatch(Token[] tokens);
+        T Parse(Token[] tokens);
+    }
+
+    public abstract class Parser<T> : IParser<T>
+    {
+        bool IParser<T>.IsMatch(Token[] tokens)
+        {
+            var result = Parse(tokens);
+            return result.Success;
+        }
+
+        T IParser<T>.Parse(Token[] tokens)
+        {
+            var result = Parse(tokens);
+            if (!result.Success)
+                throw new ApplicationException("Bad Match");
+
+            return result.Value;
+        }
 
         public ParseResult<T> Parse(Token[] tokens)
         {
             var position = Position.For(tokens);
             return Parse(position);
         }
+
+        public ParseResult ParseInto(Position position, Action<T> apply)
+        {
+            var result = Parse(position);
+            if (!result.Success)
+                return ParseResult<T>.Failure(position);
+
+            apply(result.Value);
+            return result;
+        }
+
+        public abstract ParseResult<T> Parse(Position position);
     }
 
     public class Beginning<T> : Parser<T>
@@ -29,19 +62,18 @@ namespace TextProcessing
 
         public override ParseResult<T> Parse(Position position)
         {
-            if (!position.Beginning)
-                return ParseResult<T>.Failure(position);
-
-            return _core.Parse(position);
+            return position.Beginning ? 
+                _core.Parse(position) :
+                ParseResult<T>.Failure(position);
         }
     }
 
-    public class Match<T> : Parser<T>
+    public class Is<T> : Parser<T>
     {
         public override ParseResult<T> Parse(Position position)
         {
             return position.Current.Is<T>() ?
-                ParseResult<T>.Successful(position, position.Current.As<T>()) :
+                ParseResult<T>.Successful(position.Next(), position.Current.As<T>()) :
                 ParseResult<T>.Failure(position);
         }
     }
@@ -55,66 +87,110 @@ namespace TextProcessing
 
         public override ParseResult<T> Parse(Position position)
         {
-            if (!position.End)
-                return ParseResult<T>.Failure(position);
+            var result = _core.Parse(position);
+            if (!result.Success)
+                ParseResult<T>.Failure(result.Position);
 
-            return new Match<T>().Parse(position);
+            return result.Position.End ?
+                result :
+                ParseResult<T>.Failure(result.Position);
         }
     }
 
-    public class DayTimeParser : Parser<DayTime>
+    public class ListOf<T> : Parser<List<T>>
     {
-        Parser<DayOfWeek> DayOfWeekParser = new Beginning<DayOfWeek>(new Match<DayOfWeek>());
-        Parser<LocalTime> LocalTimeParser = new End<LocalTime>(new Match<LocalTime>());
+        Parser<T> _core;
 
-        public override ParseResult<DayTime> Parse(Position position)
+        public ListOf(Parser<T> parser) =>
+            _core = parser;
+
+        public override ParseResult<List<T>> Parse(Position position)
         {
-            var dow = DayOfWeekParser.Parse(position);
-            if (!dow.Success)
-                return ParseResult<DayTime>.Failure(dow.Position);
+            var list = new List<T>();
 
-            var localTime = LocalTimeParser.Parse(dow.Position.Next());
-            if (!localTime.Success)
-                return ParseResult<DayTime>.Failure(localTime.Position);
+            ParseResult<T> result;
+            do
+            {
+                result = _core.Parse(position);
+                position = result.Position;
 
-            var result = new DayTime(dow.Value, localTime.Value);
+                if (result.Success)
+                    list.Add(result.Value);
 
-            return ParseResult<DayTime>.Successful(localTime.Position, result);
+                if (result.Position.End)
+                    break;
+
+            } while (result.Success);
+
+            return list.Any() ?
+                ParseResult<List<T>>.Successful(position, list) :
+                ParseResult<List<T>>.Failure(result.Position);
         }
     }
 
-    public class ParseResult<T>
+    public class Select<T> : Parser<T>
+        where T : new()
     {
-        T _value = default(T);
+        Selector<T>[] _selectors;
 
-        private ParseResult(Position position)
+        public Select(params Selector<T>[] selectors)
         {
-            Position = position;
-            Success = false;
+            _selectors = selectors;
         }
 
-        private ParseResult(Position position, T result)
+        public override ParseResult<T> Parse(Position position)
+        {
+            var entity = new T();
+
+            foreach (var op in _selectors)
+            {
+                var result = op(entity, position);
+
+                if (!result.Success)
+                    return ParseResult<T>.Failure(position);
+
+                position = result.Position;
+            }
+
+            return ParseResult<T>.Successful(position, entity);
+        }
+    }
+
+    public abstract class ParseResult
+    {
+        public ParseResult(Position position, bool success)
         {
             Position = position;
-            Success = true;
-            _value = result;
+            Success = success;
         }
 
         public bool Success { get; }
+        public Position Position { get; }
+    }
+
+    public class ParseResult<T> : ParseResult
+    {
+        T _value;
+
+        private ParseResult(Position position)
+            :base(position, false)
+        {
+            _value = default(T);
+        }
+
+        private ParseResult(Position position, T result)
+            : base(position, true)
+        {
+            _value = result;
+        }
 
         public T Value => Success ? _value : throw new ArgumentException("Not Successfult");
 
-        public Position Position { get; }
+        public static ParseResult<T> Successful(Position position, T t) =>
+            new ParseResult<T>(position, t);
 
-        public static ParseResult<T> Successful(Position position, T t)
-        {
-            return new ParseResult<T>(position, t);
-        }
-
-        public static ParseResult<T> Failure(Position position)
-        {
-            return new ParseResult<T>(position);
-        }
+        public static ParseResult<T> Failure(Position position) =>
+            new ParseResult<T>(position);
     }
 
     public class Position
@@ -129,16 +205,16 @@ namespace TextProcessing
 
         public int Ordinal { get; }
 
-        public Token Current => Source[Ordinal];
+        public Token Current => !End ? Source[Ordinal] : throw new ApplicationException("At End");
 
-        public bool End => Ordinal == Source.Length - 1;
+        public bool End { get; set; } = false;
 
         public bool Beginning => Ordinal == 0;
 
         public Position Next()
         {
-            if (End)
-                throw new ApplicationException("At End");
+            if (Ordinal == Source.Length - 1)
+                return new Position(Source, Source.Length) { End = true };
 
             return new Position(Source, Ordinal + 1);
         }

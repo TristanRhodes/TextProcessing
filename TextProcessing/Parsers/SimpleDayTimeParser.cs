@@ -8,7 +8,7 @@ using TextProcessing.Model;
 
 namespace TextProcessing.Parsers
 {
-    public class SimpleDayTimeParser
+    public class SimpleDayTimeParser : IParser<DayTime>
     {
         public bool IsMatch(Token[] tokens)
         {
