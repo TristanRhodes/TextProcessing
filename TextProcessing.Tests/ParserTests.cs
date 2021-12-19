@@ -116,6 +116,41 @@ namespace TextProcessing.Tests
                 .Should().HaveCount(3);
         }
 
+        [Theory]
+        [InlineData("Pickup Mon 08:00 dropoff wed 17:00")]
+        public void PickupDropOffTests(string text)
+        {
+            var tokens = Tokenise(text);
+
+            var pickup = new Select<DayTime>(
+                (s, p) => new Is<string>(s => s == "Pickup").Parse(p),
+                (s, p) => dayTimeParser.ParseInto(p, dt =>
+                {
+                    s.Day = dt.Day;
+                    s.LocalTime = dt.LocalTime;
+                }));
+
+            var dropOff = new Select<DayTime>(
+                (s, p) => new Is<string>(s => s == "dropoff").Parse(p),
+                (s, p) => dayTimeParser.ParseInto(p, dt =>
+                {
+                    s.Day = dt.Day;
+                    s.LocalTime = dt.LocalTime;
+                }));
+
+            var hybrid = new Beginning<PickupDropoff>(
+                new End<PickupDropoff>(
+                    new Select<PickupDropoff>(
+                        (s, p) => pickup.ParseInto(p, dt => s.Pickup = dt),
+                        (s, p) => dropOff.ParseInto(p, dt => s.DropOff = dt))
+            ));
+
+            var pickupResult = hybrid
+                .Parse(tokens);
+
+            pickupResult.Success.Should().BeTrue();
+        }
+
         private static Token[] Tokenise(string text)
         {
             var processor = new Tokeniser(" ",
@@ -127,5 +162,12 @@ namespace TextProcessing.Tests
                 .Tokenise(text)
                 .ToArray();
         }
+    }
+
+    public class PickupDropoff
+    {
+        public DayTime Pickup { get; set; }
+
+        public DayTime DropOff { get; set; }
     }
 }

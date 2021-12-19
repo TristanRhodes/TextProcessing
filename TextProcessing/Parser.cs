@@ -70,11 +70,20 @@ namespace TextProcessing
 
     public class Is<T> : Parser<T>
     {
+        private Func<T, bool> check;
+        public Is() { }
+        public Is(Func<T, bool> check) => 
+            this.check = check;
+
         public override ParseResult<T> Parse(Position position)
         {
-            return position.Current.Is<T>() ?
-                ParseResult<T>.Successful(position.Next(), position.Current.As<T>()) :
-                ParseResult<T>.Failure(position);
+            if (!position.Current.Is<T>())
+                return ParseResult<T>.Failure(position);
+
+            if (check != null && !check(position.Current.As<T>()))
+                return ParseResult<T>.Failure(position);
+
+            return ParseResult<T>.Successful(position.Next(), position.Current.As<T>());
         }
     }
 
