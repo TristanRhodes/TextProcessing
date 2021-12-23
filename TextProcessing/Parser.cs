@@ -10,6 +10,11 @@ using TextProcessing.Tokenisers;
 namespace TextProcessing
 {
     public delegate ParseResult Selector<T>(T entity, Position position);
+    public interface IParser
+    {
+        bool IsMatch(Token[] tokens);
+        ParseResult Parse(Token[] tokens);
+    }
 
     public interface IParser<T>
     {
@@ -51,6 +56,31 @@ namespace TextProcessing
         }
 
         public abstract ParseResult<T> Parse(Position position);
+    }
+
+    public class Populate<T> : Parser<T>
+    {
+        private Func<T, bool> check;
+
+        public Populate() { }
+        public Populate(Func<T, bool> check) =>
+            this.check = check;
+
+        public Selector<T> From<TProp>(Action<TProp, T> populate)
+        {
+            return (t, p) => ParseResult<T>.Failure(p);
+        }
+
+        public override ParseResult<T> Parse(Position position)
+        {
+            if (!position.Current.Is<T>())
+                return ParseResult<T>.Failure(position);
+
+            if (check != null && !check(position.Current.As<T>()))
+                return ParseResult<T>.Failure(position);
+
+            return ParseResult<T>.Successful(position.Next(), position.Current.As<T>());
+        }
     }
 
     public class Beginning<T> : Parser<T>
@@ -162,6 +192,57 @@ namespace TextProcessing
             }
 
             return ParseResult<T>.Successful(position, entity);
+        }
+    }
+
+    public class Select<T, U> : Parser<U>
+    {
+        Parser<T> _core;
+        Func<T, U> _converter;
+
+        public Select(Parser<T> core, Func<T, U> converter)
+        {
+            _core = core;
+            _converter = converter;
+        }
+
+        public override ParseResult<U> Parse(Position position)
+        {
+            var result = _core.Parse(position);
+            position = result.Position;
+
+            return result.Success ?
+                ParseResult<U>.Successful(position, _converter(result.Value)) :
+                ParseResult<U>.Failure(position);
+        }
+    }
+
+    public class Then<T, U> : Parser<U>
+    {
+        Parser<T> _core;
+        Func<T, Parser<U>> _second;
+
+        public Then(Parser<T> core, Func<T, Parser<U>> second)
+        {
+            _core = core;
+            _second = second;
+        }
+
+        public override ParseResult<U> Parse(Position position)
+        {
+            var result = _core.Parse(position);
+            position = result.Position;
+
+            if (!result.Success)
+                ParseResult<U>.Failure(position);
+
+            var thenResult = _second(result.Value)
+                .Parse(position);
+            position = thenResult.Position;
+
+            return thenResult.Success ?
+                ParseResult<U>.Successful(position, thenResult.Value) :
+                ParseResult<U>.Failure(position);
         }
     }
 

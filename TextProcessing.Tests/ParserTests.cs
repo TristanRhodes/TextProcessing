@@ -18,9 +18,37 @@ namespace TextProcessing.Tests
                 (dt, p) => new Is<DayOfWeek>().ParseInto(p, dow => dt.Day = dow),
                 (dt, p) => new Is<LocalTime>().ParseInto(p, lt => dt.LocalTime = lt));
 
+        static Parser<DayTime> dayTimeParser2 = 
+            new Then<DayOfWeek, DayTime>(
+                new Is<DayOfWeek>(),
+                dow => new Select<LocalTime, DayTime>(
+                    new Is<LocalTime>(),
+                    lt => new DayTime { Day = dow, LocalTime = lt }));
+
         static Parser<DayTime> explicitDayTimeParser = 
             new Beginning<DayTime>(
                 new End<DayTime>(dayTimeParser));
+
+        static Parser<DayTime> explicitDayTimeParser2 =
+            new Beginning<DayTime>(
+                new End<DayTime>(dayTimeParser2));
+
+        [Fact]
+        public void NullTest()
+        {
+            //var joinQuery1 =
+            //    DayOfWeek _dow;
+            //    LocalTime _lt;
+            //    var match = null;
+            //    var result = new Is<DayOfWeek>(dow => { _dow = dow })
+            //      .Then(new Is<LocalTime>(lt => { _lt = lt})) 
+            //    })
+            //    if (result != null)
+            //      return Fail<T>();
+            // 
+            // return Success<T>(match);
+        }
+
 
         [Theory]
         [InlineData("Monday 08:30am", DayOfWeek.Monday, 8, 30)]
@@ -53,6 +81,26 @@ namespace TextProcessing.Tests
             var tokens = Tokenise(text);
 
             var dayTime = explicitDayTimeParser.Parse(tokens)
+                .Value;
+
+            dayTime.Day
+                .Should().Be(weekDay);
+
+            dayTime.LocalTime
+                .Should().Be(new LocalTime(hour, min));
+        }
+
+        [Theory]
+        [InlineData("Monday 08:30am", DayOfWeek.Monday, 8, 30)]
+        [InlineData("tue 18:30", DayOfWeek.Tuesday, 18, 30)]
+        [InlineData("thurs 12:30pm", DayOfWeek.Thursday, 12, 30)]
+        [InlineData("Wed 00:30pm", DayOfWeek.Wednesday, 12, 30)]
+        [InlineData("Sat 12:30pm", DayOfWeek.Saturday, 12, 30)]
+        public void ComplexParsing3(string text, DayOfWeek weekDay, int hour, int min)
+        {
+            var tokens = Tokenise(text);
+
+            var dayTime = explicitDayTimeParser2.Parse(tokens)
                 .Value;
 
             dayTime.Day
