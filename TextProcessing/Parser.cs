@@ -9,7 +9,6 @@ using TextProcessing.Tokenisers;
 
 namespace TextProcessing
 {
-    public delegate ParseResult Selector<T>(T entity, Position position);
     public interface IParser
     {
         bool IsMatch(Token[] tokens);
@@ -45,42 +44,7 @@ namespace TextProcessing
             return Parse(position);
         }
 
-        public ParseResult ParseInto(Position position, Action<T> apply)
-        {
-            var result = Parse(position);
-            if (!result.Success)
-                return ParseResult<T>.Failure(position);
-
-            apply(result.Value);
-            return result;
-        }
-
         public abstract ParseResult<T> Parse(Position position);
-    }
-
-    public class Populate<T> : Parser<T>
-    {
-        private Func<T, bool> check;
-
-        public Populate() { }
-        public Populate(Func<T, bool> check) =>
-            this.check = check;
-
-        public Selector<T> From<TProp>(Action<TProp, T> populate)
-        {
-            return (t, p) => ParseResult<T>.Failure(p);
-        }
-
-        public override ParseResult<T> Parse(Position position)
-        {
-            if (!position.Current.Is<T>())
-                return ParseResult<T>.Failure(position);
-
-            if (check != null && !check(position.Current.As<T>()))
-                return ParseResult<T>.Failure(position);
-
-            return ParseResult<T>.Successful(position.Next(), position.Current.As<T>());
-        }
     }
 
     public class Beginning<T> : Parser<T>
@@ -167,34 +131,6 @@ namespace TextProcessing
         }
     }
 
-    public class Select<T> : Parser<T>
-        where T : new()
-    {
-        Selector<T>[] _selectors;
-
-        public Select(params Selector<T>[] selectors)
-        {
-            _selectors = selectors;
-        }
-
-        public override ParseResult<T> Parse(Position position)
-        {
-            var entity = new T();
-
-            foreach (var op in _selectors)
-            {
-                var result = op(entity, position);
-
-                if (!result.Success)
-                    return ParseResult<T>.Failure(position);
-
-                position = result.Position;
-            }
-
-            return ParseResult<T>.Successful(position, entity);
-        }
-    }
-
     public class Select<T, U> : Parser<U>
     {
         Parser<T> _core;
@@ -234,7 +170,7 @@ namespace TextProcessing
             position = result.Position;
 
             if (!result.Success)
-                ParseResult<U>.Failure(position);
+                return ParseResult<U>.Failure(position);
 
             var thenResult = _second(result.Value)
                 .Parse(position);
@@ -258,23 +194,28 @@ namespace TextProcessing
         public Position Position { get; }
     }
 
-    public class ParseResult<T> : ParseResult
+    public class ParseResult<T>
     {
         T _value;
 
         private ParseResult(Position position)
-            :base(position, false)
         {
+            Position = position;
+            Success = false;
             _value = default(T);
         }
 
         private ParseResult(Position position, T result)
-            : base(position, true)
         {
+            Position = position;
+            Success = true;
             _value = result;
         }
 
-        public T Value => Success ? _value : throw new ArgumentException("Not Successfult");
+        public bool Success { get; }
+        public Position Position { get; }
+
+        public T Value => Success ? _value : throw new ArgumentException("Not Successful");
 
         public static ParseResult<T> Successful(Position position, T t) =>
             new ParseResult<T>(position, t);
