@@ -6,13 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TextProcessing.Model;
-using TextProcessing.Parsers;
+using TextProcessing.OOParsers;
 using TextProcessing.Tokenisers;
 using Xunit;
 
 namespace TextProcessing.Tests
 {
-    public class ParserTests
+    public class OOParserTests
     {
         static Parser<DayTime> dayTimeParser = 
             new Then<DayOfWeek, DayTime>(
@@ -124,13 +124,13 @@ namespace TextProcessing.Tests
         {
             var tokens = Tokenise(text);
 
-            var pickup = new Then<PickupFlag, DayTime>(
+            var pickupFlag = new Then<PickupFlag, DayTime>(
                 new Is<PickupFlag>(),
                 pu => new Select<DayTime, DayTime>(
                     dayTimeParser,
                     dt => dt));
 
-            var dropOff = new Then<DropoffFlag, DayTime>(
+            var dropOffFlag = new Then<DropoffFlag, DayTime>(
                 new Is<DropoffFlag>(),
                 pu => new Select<DayTime, DayTime>(
                     dayTimeParser,
@@ -139,9 +139,9 @@ namespace TextProcessing.Tests
             var hybrid = new Beginning<PickupDropoff>(
                 new End<PickupDropoff>(
                     new Then<DayTime, PickupDropoff>(
-                        pickup,
+                        pickupFlag,
                         pu => new Select<DayTime, PickupDropoff>(
-                            dropOff,
+                            dropOffFlag,
                             dr => new PickupDropoff { Pickup = pu, DropOff = dr }))));
 
             var pickupResult = hybrid

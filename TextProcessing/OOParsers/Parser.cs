@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using TextProcessing.Model;
 using TextProcessing.Tokenisers;
 
-namespace TextProcessing
+namespace TextProcessing.OOParsers
 {
     public interface IParser
     {

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TextProcessing.Model;
 
-namespace TextProcessing.Parsers
+namespace TextProcessing.OOParsers
 {
     public class SimpleDayTimeParser : IParser<DayTime>
     {
