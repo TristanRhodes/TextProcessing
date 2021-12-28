@@ -1,10 +1,7 @@
 ﻿using FluentAssertions;
 using NodaTime;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TextProcessing.Model;
 using TextProcessing.OOParsers;
 using TextProcessing.Tokenisers;
@@ -20,6 +17,37 @@ namespace TextProcessing.Tests
                 dow => new Select<LocalTime, DayTime>(
                     new Is<LocalTime>(),
                     lt => new DayTime { Day = dow, LocalTime = lt }));
+
+        //public static Parser<OneLineTariff> LineParserDelegates =
+        //    MinBoundPrefix.Optional().Then(
+        //        minBound => PricedTimePeriodParsers.MultiPriceTimePeriodParser.Then(
+        //            timePeriod => RepeaterSuffix.Optional().Select(
+        //                repeater => new OneLineTariff(minBound.GetOrDefault(), timePeriod, repeater.GetOrDefault()))));
+
+        //[Fact]
+        public void FluentParserBuilder()
+        {
+            string text = "Monday 08:30am";
+
+            var parserBuilder = new ParserBuilder<DayTime>()
+                .Single<DayOfWeek>((bd, dow) =>
+                    bd.Single<LocalTime>((bl, lt) => 
+                        bl.Select(new DayTime(dow, lt))));
+
+            var parser = parserBuilder().Build();
+
+            var tokens = Tokenise(text);
+
+            var dayTime = parser
+                .Parse(tokens)
+                .Value;
+
+            dayTime.Day
+                .Should().Be(DayOfWeek.Monday);
+
+            dayTime.LocalTime
+                .Should().Be(new LocalTime(08, 30));
+        }
 
         static Parser<DayTime> explicitDayTimeParser =
             new Beginning<DayTime>(
@@ -162,12 +190,5 @@ namespace TextProcessing.Tests
                 .Tokenise(text)
                 .ToArray();
         }
-    }
-
-    public class PickupDropoff
-    {
-        public DayTime Pickup { get; set; }
-
-        public DayTime DropOff { get; set; }
     }
 }
