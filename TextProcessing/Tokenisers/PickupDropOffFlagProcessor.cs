@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
+using TextProcessing.Model;
 
 namespace TextProcessing.Tokenisers
 {
@@ -25,8 +26,4 @@ namespace TextProcessing.Tokenisers
             throw new ApplicationException("No Match: " + token);
         }
     }
-
-    public class PickupFlag { }
-
-    public class DropoffFlag { }
 }
