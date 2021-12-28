@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NodaTime;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,5 +24,17 @@ namespace TextProcessing.Model
         public DayTime Pickup { get; set; }
 
         public DayTime DropOff { get; set; }
+    }
+
+    public record Range<T>
+    {
+        public T From { get; init; }
+        public T To { get; init; }
+    }
+
+    public record OpenHours
+    {
+        public Range<DayOfWeek> Days { get; init; }
+        public Range<LocalTime> Hours { get; init; }
     }
 }

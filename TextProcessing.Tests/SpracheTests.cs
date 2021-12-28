@@ -25,7 +25,7 @@ namespace TextProcessing.Tests
         public void DayMatch(string text, DayOfWeek dayOfWeek)
         {
 
-            ComponentParsers
+            TokenParsers
                 .DayOfWeek.Parse(text)
                 .Should().Be(dayOfWeek);
         }
@@ -42,7 +42,7 @@ namespace TextProcessing.Tests
         public void TimeConvertTest(string text, int hour, int min)
         {
 
-            ComponentParsers
+            TokenParsers
                 .LocalTime.Parse(text)
                 .Should().Be(new LocalTime(hour, min));
         }
@@ -60,7 +60,7 @@ namespace TextProcessing.Tests
         [InlineData("20:30ampm")]
         public void BadFormatConversion(string text)
         {
-            ComponentParsers
+            TokenParsers
                 .LocalTime.TryParse(text)
                 .WasSuccessful
                 .Should().BeFalse();
@@ -77,7 +77,7 @@ namespace TextProcessing.Tests
         [InlineData("25:01")]
         public void BadConversion(string text)
         {
-            ComponentParsers
+            TokenParsers
                 .LocalTime.TryParse(text)
                 .WasSuccessful
                 .Should().BeFalse();
@@ -87,13 +87,13 @@ namespace TextProcessing.Tests
         [InlineData("Mon 08:00", DayOfWeek.Monday, 08, 00)]
         public void DayTimeTests(string text, DayOfWeek dow, int hours, int min)
         {
-            var result = ComponentParsers.DayTime
+            var result = ExpressionParsers.DayTime
                 .Parse(text);
             result.Day.Should().Be(dow);
             result.LocalTime.Should().Be(new LocalTime(hours, min));
 
 
-            result = ComponentParsers.DayTimeDelegate
+            result = ExpressionParsers.DayTimeDelegate
                 .Parse(text);
             result.Day.Should().Be(dow);
             result.LocalTime.Should().Be(new LocalTime(hours, min));
@@ -103,11 +103,11 @@ namespace TextProcessing.Tests
         [InlineData("Mon08:00")]
         public void FailDayTimeTests(string text)
         {
-            ComponentParsers.DayTime
+            ExpressionParsers.DayTime
                 .TryParse(text).WasSuccessful
                 .Should().BeFalse();
 
-            ComponentParsers.DayTimeDelegate
+            ExpressionParsers.DayTimeDelegate
                 .TryParse(text).WasSuccessful
                 .Should().BeFalse();
         }
@@ -117,7 +117,7 @@ namespace TextProcessing.Tests
         [InlineData("Pickup")]
         public void Pickup(string text)
         {
-            ComponentParsers.PickupFlag
+            TokenParsers.PickupFlag
                 .TryParse(text).WasSuccessful
                 .Should().BeTrue();
         }
@@ -126,9 +126,9 @@ namespace TextProcessing.Tests
         [InlineData("Pickup Mon 08:00")]
         public void PickupDayTimeTests(string text)
         {
-            var parser = from pickupFlag in ComponentParsers.PickupFlag
+            var parser = from pickupFlag in TokenParsers.PickupFlag
                          from _1 in Parse.WhiteSpace
-                         from pickup in ComponentParsers.DayTime
+                         from pickup in ExpressionParsers.DayTime
                          select pickup;
 
             parser
@@ -142,6 +142,74 @@ namespace TextProcessing.Tests
         {
             ExpressionParsers
                 .PickupDropOff
+                .End()
+                .Parse(text);
+        }
+
+        [Theory]
+        [InlineData("Mon to Fri")]
+        [InlineData("Monday - Friday")]
+        [InlineData("monday-fri")]
+        public void DayRangeTests(string text)
+        {
+            var result = ExpressionParsers
+                .DayRange
+                .End()
+                .Parse(text);
+
+            result.From
+                .Should().Be(DayOfWeek.Monday);
+            
+            result.To
+                .Should().Be(DayOfWeek.Friday);
+        }
+
+        [Theory]
+        [InlineData("8:00 to 23:00")]
+        [InlineData("08:00am - 11:00pm")]
+        [InlineData("08:00am-11:00pm")]
+        public void TimeRangeTests(string text)
+        {
+            var result = ExpressionParsers
+                .TimeRange
+                .End()
+                .Parse(text);
+
+            result.From
+                .Should().Be(new LocalTime(08, 00));
+
+            result.To
+                .Should().Be(new LocalTime(23, 00));
+        }
+
+        [Theory]
+        [InlineData("Open Mon to Fri 08:00 - 18:00")]
+        public void OpenHoursTest(string text)
+        {
+            ExpressionParsers
+                .OpenHours
+                .End()
+                .Parse(text);
+        }
+
+        [Theory]
+        [InlineData("Tours 10:00 12:00 14:00 17:00")]
+        [InlineData("Tours 10:00 12:00 14:00 17:00 20:00")]
+        [InlineData("Tours 10:00 12:00 14:00 17:00 20:00 22:00")]
+        public void TourTimesTests(string text)
+        {
+            ExpressionParsers
+                .TourTimes
+                .End()
+                .Parse(text);
+        }
+
+        [Theory]
+        [InlineData("Events Tuesday 18:00 Wednesday 15:00 Friday 12:00")]
+        public void EventsTests(string text)
+        {
+            ExpressionParsers
+                .EventSchedule
                 .End()
                 .Parse(text);
         }
