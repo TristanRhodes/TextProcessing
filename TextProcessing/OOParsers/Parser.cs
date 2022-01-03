@@ -9,12 +9,6 @@ using TextProcessing.Tokenisers;
 
 namespace TextProcessing.OOParsers
 {
-    public interface IParser
-    {
-        bool IsMatch(Token[] tokens);
-        ParseResult Parse(Token[] tokens);
-    }
-
     public interface IParser<T>
     {
         bool IsMatch(Token[] tokens);
@@ -62,11 +56,11 @@ namespace TextProcessing.OOParsers
         }
     }
 
-    public class Is<T> : Parser<T>
+    public class IsToken<T> : Parser<T>
     {
         private Func<T, bool> check;
-        public Is() { }
-        public Is(Func<T, bool> check) => 
+        public IsToken() { }
+        public IsToken(Func<T, bool> check) => 
             this.check = check;
 
         public override ParseResult<T> Parse(Position position)
@@ -153,6 +147,21 @@ namespace TextProcessing.OOParsers
         }
     }
 
+    public class Select<T> : Parser<T>
+    {
+        Func<T> _convert;
+
+        public Select(Func<T> convert)
+        {
+            _convert = convert;
+        }
+
+        public override ParseResult<T> Parse(Position position)
+        {
+            return ParseResult<T>.Successful(position, _convert());
+        }
+    }
+
     public class Then<T, U> : Parser<U>
     {
         Parser<T> _core;
@@ -161,6 +170,11 @@ namespace TextProcessing.OOParsers
         public Then(Parser<T> core, Func<T, Parser<U>> second)
         {
             _core = core;
+            _second = second;
+        }
+
+        public Then(Func<T, Parser<U>> second)
+        {
             _second = second;
         }
 
@@ -180,18 +194,6 @@ namespace TextProcessing.OOParsers
                 ParseResult<U>.Successful(position, thenResult.Value) :
                 ParseResult<U>.Failure(position);
         }
-    }
-
-    public abstract class ParseResult
-    {
-        public ParseResult(Position position, bool success)
-        {
-            Position = position;
-            Success = success;
-        }
-
-        public bool Success { get; }
-        public Position Position { get; }
     }
 
     public class ParseResult<T>
@@ -253,4 +255,6 @@ namespace TextProcessing.OOParsers
         public static Position For(Token[] tokens) =>
             new Position(tokens, 0);
     }
+
+
 }

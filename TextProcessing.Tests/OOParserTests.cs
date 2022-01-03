@@ -11,47 +11,22 @@ namespace TextProcessing.Tests
 {
     public class OOParserTests
     {
-        static Parser<DayTime> dayTimeParser = 
+        static Parser<DayTime> dayTimeParser =
             new Then<DayOfWeek, DayTime>(
-                new Is<DayOfWeek>(),
-                dow => new Select<LocalTime, DayTime>(
-                    new Is<LocalTime>(),
-                    lt => new DayTime { Day = dow, LocalTime = lt }));
+                new IsToken<DayOfWeek>(),
+                dow => new Then<LocalTime, DayTime>(
+                    new IsToken<LocalTime>(),
+                    lt => new Select<DayTime>(
+                        () => new DayTime { Day = dow, LocalTime = lt })));
 
-        //public static Parser<OneLineTariff> LineParserDelegates =
-        //    MinBoundPrefix.Optional().Then(
-        //        minBound => PricedTimePeriodParsers.MultiPriceTimePeriodParser.Then(
-        //            timePeriod => RepeaterSuffix.Optional().Select(
-        //                repeater => new OneLineTariff(minBound.GetOrDefault(), timePeriod, repeater.GetOrDefault()))));
-
-        //[Fact]
-        public void FluentParserBuilder()
-        {
-            string text = "Monday 08:30am";
-
-            var parserBuilder = new ParserBuilder<DayTime>()
-                .Single<DayOfWeek>((bd, dow) =>
-                    bd.Single<LocalTime>((bl, lt) => 
-                        bl.Select(new DayTime(dow, lt))));
-
-            var parser = parserBuilder().Build();
-
-            var tokens = Tokenise(text);
-
-            var dayTime = parser
-                .Parse(tokens)
-                .Value;
-
-            dayTime.Day
-                .Should().Be(DayOfWeek.Monday);
-
-            dayTime.LocalTime
-                .Should().Be(new LocalTime(08, 30));
-        }
+        static Parser<DayTime> dayTimeFluentParser =
+            new IsToken<DayOfWeek>()
+            .Then(dow => new IsToken<LocalTime>()
+                .Select(lt => new DayTime { Day = dow, LocalTime = lt }));
 
         static Parser<DayTime> explicitDayTimeParser =
             new Beginning<DayTime>(
-                new End<DayTime>(dayTimeParser));
+                new End<DayTime>(dayTimeFluentParser));
 
         [Theory]
         [InlineData("Monday 08:30am", DayOfWeek.Monday, 8, 30)]
@@ -126,7 +101,7 @@ namespace TextProcessing.Tests
         {
             var tokens = Tokenise(text);
 
-            var result = new ListOf<Int32>(new Is<int>())
+            var result = new ListOf<Int32>(new IsToken<int>())
                 .Parse(tokens);
 
             result.Value
@@ -153,13 +128,13 @@ namespace TextProcessing.Tests
             var tokens = Tokenise(text);
 
             var pickupFlag = new Then<PickupFlag, DayTime>(
-                new Is<PickupFlag>(),
+                new IsToken<PickupFlag>(),
                 pu => new Select<DayTime, DayTime>(
                     dayTimeParser,
                     dt => dt));
 
             var dropOffFlag = new Then<DropoffFlag, DayTime>(
-                new Is<DropoffFlag>(),
+                new IsToken<DropoffFlag>(),
                 pu => new Select<DayTime, DayTime>(
                     dayTimeParser,
                     dt => dt));

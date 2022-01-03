@@ -8,49 +8,16 @@ using TextProcessing.Model;
 
 namespace TextProcessing.OOParsers
 {
-    public class ParserBuilder<T>
+    public static class ParserExtensions
     {
-        Parser<T> _core;
-
-        public ParserBuilder()
+        public static Parser<U> Then<T, U>(this Parser<T> core, Func<T, Parser<U>> then)
         {
-            _core = new Is<T>();
+            return new Then<T, U>(core, then);
         }
 
-        public ParserBuilder(Parser<T> core)
+        public static Parser<U> Select<T, U>(this Parser<T> core, Func<T, U> select)
         {
-            _core = core;
-        }
-
-        public Func<ParserBuilder<T>> Single<TResult>(Func<ParserBuilder<T>, TResult, Func<ParserBuilder<T>>> p)
-        {
-            TResult result = default(TResult);
-
-            var core = new Is<TResult>();
-            var then = new Then<T, TResult>(_core, (t) => { return null; });
-
-            return () => this;
-        }
-
-        public Func<ParserBuilder<T>> Then<TResult>(Func<ParserBuilder<T>, TResult, Func<ParserBuilder<T>>> p)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Func<ParserBuilder<T>> Or<TResult>(Func<ParserBuilder<T>, TResult, Func<ParserBuilder<T>>> p)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Func<ParserBuilder<T>> Select<TResult>(TResult result)
-        {
-            throw new NotImplementedException();
-            //return () => new ParserBuilder<TResult>(new Select<TResult>(result));
-        }
-
-        public Parser<T> Build()
-        {
-            throw new NotImplementedException();
+            return new Select<T, U>(core, select);
         }
     }
 }
