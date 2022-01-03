@@ -14,10 +14,9 @@ namespace TextProcessing.Tests
         static Parser<DayTime> dayTimeParser =
             new Then<DayOfWeek, DayTime>(
                 new IsToken<DayOfWeek>(),
-                dow => new Then<LocalTime, DayTime>(
+                dow => new Select<LocalTime, DayTime>(
                     new IsToken<LocalTime>(),
-                    lt => new Select<DayTime>(
-                        () => new DayTime { Day = dow, LocalTime = lt })));
+                    lt => new DayTime { Day = dow, LocalTime = lt }));
 
         static Parser<DayTime> dayTimeFluentParser =
             Parser.IsToken<DayOfWeek>().Then(dow => 
@@ -100,7 +99,7 @@ namespace TextProcessing.Tests
         {
             var tokens = Tokenise(text);
 
-            var result = new ListOf<Int32>(new IsToken<int>())
+            var result = Parser.ListOf(new IsToken<int>())
                 .Parse(tokens);
 
             result.Value
@@ -113,7 +112,7 @@ namespace TextProcessing.Tests
         {
             var tokens = Tokenise(text);
 
-            var result = new ListOf<DayTime>(dayTimeParser)
+            var result = Parser.ListOf(dayTimeParser)
                 .Parse(tokens);
 
             result.Value

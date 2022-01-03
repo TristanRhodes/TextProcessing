@@ -28,4 +28,10 @@ namespace TextProcessing.OOParsers
                 tokens[1].As<LocalTime>());
         }
     }
+
+    public interface IParser<T>
+    {
+        bool IsMatch(Token[] tokens);
+        T Parse(Token[] tokens);
+    }
 }
