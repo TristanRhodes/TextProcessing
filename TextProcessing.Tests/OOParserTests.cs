@@ -20,13 +20,12 @@ namespace TextProcessing.Tests
                         () => new DayTime { Day = dow, LocalTime = lt })));
 
         static Parser<DayTime> dayTimeFluentParser =
-            new IsToken<DayOfWeek>()
-            .Then(dow => new IsToken<LocalTime>()
-                .Select(lt => new DayTime { Day = dow, LocalTime = lt }));
+            Parser.IsToken<DayOfWeek>().Then(dow => 
+                Parser.IsToken<LocalTime>().Select(lt =>
+                    new DayTime { Day = dow, LocalTime = lt }));
 
         static Parser<DayTime> explicitDayTimeParser =
-            new Beginning<DayTime>(
-                new End<DayTime>(dayTimeFluentParser));
+            dayTimeParser.End();
 
         [Theory]
         [InlineData("Monday 08:30am", DayOfWeek.Monday, 8, 30)]
@@ -127,25 +126,18 @@ namespace TextProcessing.Tests
         {
             var tokens = Tokenise(text);
 
-            var pickupFlag = new Then<PickupFlag, DayTime>(
-                new IsToken<PickupFlag>(),
-                pu => new Select<DayTime, DayTime>(
-                    dayTimeParser,
-                    dt => dt));
+            var pickupFlag = Parser
+                .IsToken<PickupFlag>()
+                .Then(_ => dayTimeParser);
 
-            var dropOffFlag = new Then<DropoffFlag, DayTime>(
-                new IsToken<DropoffFlag>(),
-                pu => new Select<DayTime, DayTime>(
-                    dayTimeParser,
-                    dt => dt));
+            var dropOffFlag = Parser
+                .IsToken<DropoffFlag>()
+                .Then(_ => dayTimeParser);
 
-            var hybrid = new Beginning<PickupDropoff>(
-                new End<PickupDropoff>(
-                    new Then<DayTime, PickupDropoff>(
-                        pickupFlag,
-                        pu => new Select<DayTime, PickupDropoff>(
-                            dropOffFlag,
-                            dr => new PickupDropoff { Pickup = pu, DropOff = dr }))));
+            var hybrid  = pickupFlag
+                .Then(pu => dropOffFlag
+                .Select(dr => new PickupDropoff { Pickup = pu, DropOff = dr }))
+                .End();
 
             var pickupResult = hybrid
                 .Parse(tokens);

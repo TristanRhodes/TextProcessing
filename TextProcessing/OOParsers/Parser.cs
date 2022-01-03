@@ -41,21 +41,6 @@ namespace TextProcessing.OOParsers
         public abstract ParseResult<T> Parse(Position position);
     }
 
-    public class Beginning<T> : Parser<T>
-    {
-        Parser<T> _core;
-
-        public Beginning(Parser<T> parser) =>
-            _core = parser;
-
-        public override ParseResult<T> Parse(Position position)
-        {
-            return position.Beginning ? 
-                _core.Parse(position) :
-                ParseResult<T>.Failure(position);
-        }
-    }
-
     public class IsToken<T> : Parser<T>
     {
         private Func<T, bool> check;
