@@ -11,6 +11,17 @@ namespace TextProcessing.OOTokenisers
 {
     public class WeekDayTokenProcessor : ITokenProcessor
     {
+        static Dictionary<string, DayOfWeek> DayGroupMap = new Dictionary<string, DayOfWeek>()
+        {
+            { "Monday", DayOfWeek.Monday },
+            { "Tuesday", DayOfWeek.Tuesday },
+            { "Wednesday", DayOfWeek.Wednesday },
+            { "Thursday", DayOfWeek.Thursday },
+            { "Friday", DayOfWeek.Friday },
+            { "Saturday", DayOfWeek.Saturday },
+            { "Sunday", DayOfWeek.Sunday },
+        };
+
         Regex regex = new Regex("^(?<Monday>[Mm]on(day)?)|(?<Tuesday>[Tt]ue(sday)?)|(?<Wednesday>[Ww]ed(nesday)?)|(?<Thursday>[Tt]hu(rs(day)?)?)|(?<Friday>[Ff]ri(day)?)|(?<Saturday>[Ss]at(urday)?)|(?<Sunday>[Ss]un(day)?)$");
 
         public bool IsMatch(string token)
@@ -21,31 +32,18 @@ namespace TextProcessing.OOTokenisers
         public Token Tokenise(string token)
         {
             var match = regex.Match(token);
+
             if (!match.Success)
+                return Token.Create(token);
+
+            var day = DayGroupMap
+                .Where(kvp => match.Groups[kvp.Key].Success)
+                .Select(kvp => (DayOfWeek?)kvp.Value)
+                .SingleOrDefault();
+
+            return (day is not null) ?
+                Token.Create(token, day) :
                 throw new ArgumentException("Bad Pattern: " + token);
-
-            if (match.Groups["Monday"].Success)
-                return Token.Create(token, DayOfWeek.Monday);
-
-            if (match.Groups["Tuesday"].Success)
-                return Token.Create(token, DayOfWeek.Tuesday);
-
-            if (match.Groups["Wednesday"].Success)
-                return Token.Create(token, DayOfWeek.Wednesday);
-
-            if (match.Groups["Thursday"].Success)
-                return Token.Create(token, DayOfWeek.Thursday);
-
-            if (match.Groups["Friday"].Success)
-                return Token.Create(token, DayOfWeek.Friday);
-
-            if (match.Groups["Saturday"].Success)
-                return Token.Create(token, DayOfWeek.Saturday);
-
-            if (match.Groups["Sunday"].Success)
-                return Token.Create(token, DayOfWeek.Sunday);
-
-            throw new ArgumentException("Bad Pattern: " + token);
         }
     }
 

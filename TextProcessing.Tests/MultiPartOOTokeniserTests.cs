@@ -10,7 +10,7 @@ using Xunit;
 
 namespace TextProcessing.Tests
 {
-    public class MultiPartTokeniserTests
+    public class MultiPartOOTokeniserTests
     {
         [Theory]
         [InlineData("Monday 08:30am", DayOfWeek.Monday, 8, 30)]
