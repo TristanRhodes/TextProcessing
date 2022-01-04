@@ -129,6 +129,25 @@ namespace TextProcessing.OOParsers
         }
     }
 
+    public class Or<T> : Parser<T>
+    {
+        Parser<T>[] _options;
+
+        public Or(params Parser<T>[] options) => _options = options;
+
+        public override ParseResult<T> Parse(Position position)
+        {
+            foreach(var parser in _options)
+            {
+                var result = parser.Parse(position);
+                if (result.Success)
+                    return ParseResult<T>.Successful(result.Position, result.Value);
+            }
+
+            return ParseResult<T>.Failure(position);
+        }
+    }
+
     public class ParseResult<T>
     {
         T _value;
@@ -188,6 +207,4 @@ namespace TextProcessing.OOParsers
         public static Position For(Token[] tokens) =>
             new Position(tokens, 0);
     }
-
-
 }

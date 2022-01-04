@@ -127,7 +127,7 @@ namespace TextProcessing.Tests
         public void PickupDayTimeTests(string text)
         {
             var parser = from pickupFlag in TokenParsers.PickupFlag
-                         from _1 in Parse.WhiteSpace
+                         from _ in Parse.WhiteSpace
                          from pickup in ExpressionParsers.DayTime
                          select pickup;
 

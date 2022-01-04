@@ -27,6 +27,8 @@ namespace TextProcessing.OOParsers
         public static Parser<List<T>> ListOf<T>(Parser<T> parser) =>
             new ListOf<T>(parser);
 
+        public static Parser<T> Or<T>(params Parser<T>[] options) =>
+            new Or<T>(options);
     }
 
     public static class ParserExtensions

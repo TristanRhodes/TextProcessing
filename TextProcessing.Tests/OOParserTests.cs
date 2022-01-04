@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using NodaTime;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using TextProcessing.Model;
 using TextProcessing.OOParsers;
@@ -25,6 +26,40 @@ namespace TextProcessing.Tests
 
         static Parser<DayTime> explicitDayTimeParser =
             dayTimeParser.End();
+
+        static Parser<RangeMarker> rangeMarker =
+            Parser.Or(
+                Parser.IsToken<HypenSymbol>().Select(r => new RangeMarker()),
+                Parser.IsToken<JoiningWord>().Select(r => new RangeMarker())
+            );
+
+        static Parser<Range<DayOfWeek>> dayRangeParser =
+            Parser.IsToken<DayOfWeek>().Then(from =>
+                rangeMarker.Then(_ => 
+                    Parser.IsToken<DayOfWeek>()
+                        .Select(to => new Range<DayOfWeek> { From = from, To = to })));
+
+        static Parser<Range<LocalTime>> timeRangeParser =
+            Parser.IsToken<LocalTime>().Then(from =>
+                rangeMarker.Then(_ =>
+                    Parser.IsToken<LocalTime>()
+                        .Select(to => new Range<LocalTime> { From = from, To = to })));
+
+        static Parser<OpenHours> openHoursParser =
+            Parser.IsToken<OpenFlag>().Then(_ =>
+                dayRangeParser.Then(dr =>
+                    timeRangeParser.Select(tr => new OpenHours { Days = dr, Hours = tr})));
+
+        static Parser<List<LocalTime>> tourTimesParser =
+            Parser.IsToken<ToursFlag>().Then(_ =>
+                Parser.ListOf(
+                    Parser.IsToken<LocalTime>())
+                        .Select(times => times));
+
+        static Parser<List<DayTime>> eventTimesParser =
+            Parser.IsToken<EventsFlag>().Then(_ =>
+                Parser.ListOf(dayTimeParser)
+                    .Select(times => times));
 
         [Theory]
         [InlineData("Monday 08:30am", DayOfWeek.Monday, 8, 30)]
@@ -144,17 +179,95 @@ namespace TextProcessing.Tests
             pickupResult.Success.Should().BeTrue();
         }
 
-        private static Token[] Tokenise(string text)
+        [Theory]
+        [InlineData("Mon to Fri")]
+        [InlineData("Monday - Friday")]
+        public void DayRangeTests(string text)
+        {
+            var tokens = Tokenise(text, true);
+
+            var result = dayRangeParser
+                .Parse(tokens)
+                .Value;
+
+            result.From
+                .Should().Be(DayOfWeek.Monday);
+
+            result.To
+                .Should().Be(DayOfWeek.Friday);
+        }
+
+        [Theory]
+        [InlineData("8:00 to 23:00")]
+        [InlineData("08:00am - 11:00pm")]
+        public void TimeRangeTests(string text)
+        {
+            var tokens = Tokenise(text, true);
+
+            var result = timeRangeParser
+                .Parse(tokens)
+                .Value;
+
+            result.From
+                .Should().Be(new LocalTime(08, 00));
+
+            result.To
+                .Should().Be(new LocalTime(23, 00));
+        }
+
+        [Theory]
+        [InlineData("Open Mon to Fri 08:00 - 18:00")]
+        public void OpenHoursTest(string text)
+        {
+            var tokens = Tokenise(text, true);
+
+            openHoursParser
+                .Parse(tokens)
+                .Success.Should().BeTrue();
+        }
+
+        [Theory]
+        [InlineData("Tours 10:00 12:00 14:00 17:00")]
+        [InlineData("Tours 10:00 12:00 14:00 17:00 20:00")]
+        [InlineData("Tours 10:00 12:00 14:00 17:00 20:00 22:00")]
+        public void TourTimesTests(string text)
+        {
+            var tokens = Tokenise(text, true);
+
+            tourTimesParser
+                .Parse(tokens)
+                .Success.Should().BeTrue();
+        }
+
+        [Theory]
+        [InlineData("Events Tuesday 18:00 Wednesday 15:00 Friday 12:00")]
+        public void EventsTests(string text)
+        {
+            var tokens = Tokenise(text, true);
+
+            var result = eventTimesParser
+                .Parse(tokens)
+                .Success.Should().BeTrue();
+        }
+
+        private static Token[] Tokenise(string text, bool fullMatch = false)
         {
             var processor = new Tokeniser(" ",
-                new PickupDropOffFlagProcessor(),
+                new JoiningWordTokenProcessor(),
+                new HypenSymbolTokenProcessor(),
+                new FlagTokenProcessor(),
                 new WeekDayTokenProcessor(),
                 new ClockTimeTokenProcessor(),
                 new IntegerTokenProcessor());
 
-            return processor
+            var tokens = processor
                 .Tokenise(text)
                 .ToArray();
+
+            if (fullMatch && tokens.Any(t => t.Is<string>()))
+                throw new ApplicationException("Unmatched tokens.");
+
+            return tokens;
         }
     }
 }
