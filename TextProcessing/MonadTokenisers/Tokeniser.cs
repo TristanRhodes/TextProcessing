@@ -37,5 +37,29 @@ namespace TextProcessing.MonadTokenisers
                     match.Token;
             }
         }
+
+        public static TokenProcessor FromRegex(string pattern, Func<Match, TokenisationResult> resolver)
+        {
+            var regex = new Regex(pattern);
+            return (string token) =>
+            {
+                var match = regex.Match(token);
+
+                if (!match.Success)
+                    return Token.Fail(token);
+
+                return resolver(match);
+            };
+        }
+
+        public static TokenProcessor FromChar(char c, Func<char, TokenisationResult> resolver)
+        {
+            return (string token) =>
+            {
+                return (token.Length == 1 && token[0] == c) ?
+                    resolver(token[0]) :
+                    Token.Fail(token);
+            };
+        }
     }
 }
