@@ -9,17 +9,6 @@ using TextProcessing.Model;
 
 namespace TextProcessing.SpracheParsers
 {
-    // Separate two part element context
-    //"Pickup Mon 08:00 dropoff wed 17:00"
-
-    // Range elements
-    //"Open Mon to Fri 08:00 - 18:00"
-
-    // Repeating tokens
-    //"Tours 10:00 12:00 14:00 17:00 20:00"
-
-    // Repeating complex elements
-    //"Events Tuesday 18:00 Wednesday 15:00 Friday 12:00"
 
     public class TokenParsers
     {
@@ -109,70 +98,5 @@ namespace TextProcessing.SpracheParsers
                Parse.Regex(" ?- ?").Select(c => new RangeMarker()),
                Parse.Regex(" [Tt]o ").Select(s => new RangeMarker())
         }.Aggregate((a, b) => a.Or(b));
-    }
-
-    public class ExpressionParsers
-    {
-        public static Parser<DayTime> DayTime =
-            from day in TokenParsers.DayOfWeek
-            from _ in Parse.WhiteSpace
-            from time in TokenParsers.LocalTime
-            select new DayTime(day, time);
-
-        public static Parser<DayTime> DayTimeDelegate =
-            TokenParsers.DayOfWeek.Then(day =>
-                Parse.WhiteSpace.Then(_ =>
-                    TokenParsers.LocalTime.Select(time =>
-                        new DayTime(day, time))));
-
-        public static Parser<DayTime> PickupTime =
-            from pickupFlag in TokenParsers.PickupFlag
-            from _ in Parse.WhiteSpace
-            from pickup in DayTime
-            select pickup;
-
-        public static Parser<DayTime> DropOffTime =
-            from dropOffFlag in TokenParsers.DropOffFlag
-            from _ in Parse.WhiteSpace
-            from pickupFlag in DayTime
-            select pickupFlag;
-
-        public static Parser<PickupDropoff> PickupDropOff =
-            from pickup in PickupTime
-            from _ in Parse.WhiteSpace
-            from dropOff in DropOffTime
-            select new PickupDropoff { Pickup = pickup, DropOff = dropOff };
-
-        public static Parser<Range<DayOfWeek>> DayRange =
-            from start in TokenParsers.DayOfWeek
-            from _ in TokenParsers.RangeMarker
-            from end in TokenParsers.DayOfWeek
-            select new Range<DayOfWeek> { From = start, To = end };
-
-        public static Parser<Range<LocalTime>> TimeRange =
-            from start in TokenParsers.LocalTime
-            from _ in TokenParsers.RangeMarker
-            from end in TokenParsers.LocalTime
-            select new Range<LocalTime> { From = start, To = end };
-
-        public static Parser<OpenHours> OpenHours =
-            from start in TokenParsers.OpenFlag
-            from _1 in Parse.WhiteSpace
-            from days in DayRange
-            from _2 in Parse.WhiteSpace
-            from hours in TimeRange
-            select new OpenHours { Days = days, Hours = hours};
-
-        public static Parser<IEnumerable<LocalTime>> TourTimes =
-            from toursFlag in TokenParsers.ToursFlag
-            from _ in Parse.WhiteSpace
-            from times in Parse.DelimitedBy(TokenParsers.LocalTime, Parse.WhiteSpace)
-            select times;
-
-        public static Parser<IEnumerable<DayTime>> EventSchedule =
-            from eventsFlag in TokenParsers.EventsFlag
-            from _ in Parse.WhiteSpace
-            from times in Parse.DelimitedBy(DayTime, Parse.WhiteSpace)
-            select times;
     }
 }

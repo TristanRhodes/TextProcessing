@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TextProcessing.Tokenisers;
+using TextProcessing.OOTokenisers;
 using Xunit;
 
 namespace TextProcessing.Tests

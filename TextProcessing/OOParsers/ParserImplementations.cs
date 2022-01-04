@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TextProcessing.Model;
-using TextProcessing.Tokenisers;
+using TextProcessing.OOTokenisers;
 
 namespace TextProcessing.OOParsers
 {

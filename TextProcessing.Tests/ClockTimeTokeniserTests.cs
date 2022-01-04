@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using NodaTime;
 using System;
-using TextProcessing.Tokenisers;
+using TextProcessing.OOTokenisers;
 using Xunit;
 
 namespace TextProcessing.Tests

@@ -14,6 +14,18 @@ namespace TextProcessing.Tests
 {
     public class SpracheTests
     {
+        // Separate two part element context
+        //"Pickup Mon 08:00 dropoff wed 17:00"
+
+        // Range elements
+        //"Open Mon to Fri 08:00 - 18:00"
+
+        // Repeating tokens
+        //"Tours 10:00 12:00 14:00 17:00 20:00"
+
+        // Repeating complex elements
+        //"Events Tuesday 18:00 Wednesday 15:00 Friday 12:00"
+
         [Theory]
         [InlineData("sun", DayOfWeek.Sunday)]
         [InlineData("Monday", DayOfWeek.Monday)]

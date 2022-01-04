@@ -5,61 +5,24 @@ using System.Collections.Generic;
 using System.Linq;
 using TextProcessing.Model;
 using TextProcessing.OOParsers;
-using TextProcessing.Tokenisers;
+using TextProcessing.OOTokenisers;
 using Xunit;
 
 namespace TextProcessing.Tests
 {
     public class OOParserTests
     {
-        static Parser<DayTime> dayTimeParser =
-            new Then<DayOfWeek, DayTime>(
-                new IsToken<DayOfWeek>(),
-                dow => new Select<LocalTime, DayTime>(
-                    new IsToken<LocalTime>(),
-                    lt => new DayTime { Day = dow, LocalTime = lt }));
+        // Separate two part element context
+        //"Pickup Mon 08:00 dropoff wed 17:00"
 
-        static Parser<DayTime> dayTimeFluentParser =
-            Parser.IsToken<DayOfWeek>().Then(dow => 
-                Parser.IsToken<LocalTime>().Select(lt =>
-                    new DayTime { Day = dow, LocalTime = lt }));
+        // Range elements
+        //"Open Mon to Fri 08:00 - 18:00"
 
-        static Parser<DayTime> explicitDayTimeParser =
-            dayTimeParser.End();
+        // Repeating tokens
+        //"Tours 10:00 12:00 14:00 17:00 20:00"
 
-        static Parser<RangeMarker> rangeMarker =
-            Parser.Or(
-                Parser.IsToken<HypenSymbol>().Select(r => new RangeMarker()),
-                Parser.IsToken<JoiningWord>().Select(r => new RangeMarker())
-            );
-
-        static Parser<Range<DayOfWeek>> dayRangeParser =
-            Parser.IsToken<DayOfWeek>().Then(from =>
-                rangeMarker.Then(_ => 
-                    Parser.IsToken<DayOfWeek>()
-                        .Select(to => new Range<DayOfWeek> { From = from, To = to })));
-
-        static Parser<Range<LocalTime>> timeRangeParser =
-            Parser.IsToken<LocalTime>().Then(from =>
-                rangeMarker.Then(_ =>
-                    Parser.IsToken<LocalTime>()
-                        .Select(to => new Range<LocalTime> { From = from, To = to })));
-
-        static Parser<OpenHours> openHoursParser =
-            Parser.IsToken<OpenFlag>().Then(_ =>
-                dayRangeParser.Then(dr =>
-                    timeRangeParser.Select(tr => new OpenHours { Days = dr, Hours = tr})));
-
-        static Parser<List<LocalTime>> tourTimesParser =
-            Parser.IsToken<ToursFlag>().Then(_ =>
-                Parser.ListOf(
-                    Parser.IsToken<LocalTime>())
-                        .Select(times => times));
-
-        static Parser<List<DayTime>> eventTimesParser =
-            Parser.IsToken<EventsFlag>().Then(_ =>
-                Parser.ListOf(dayTimeParser)
-                    .Select(times => times));
+        // Repeating complex elements
+        //"Events Tuesday 18:00 Wednesday 15:00 Friday 12:00"
 
         [Theory]
         [InlineData("Monday 08:30am", DayOfWeek.Monday, 8, 30)]
@@ -91,8 +54,8 @@ namespace TextProcessing.Tests
         {
             var tokens = Tokenise(text);
 
-            var dayTime = explicitDayTimeParser.Parse(tokens)
-                .Value;
+            var dayTime = ExpressionParsers.ExplicitDayTimeParser
+                .Parse(tokens).Value;
 
             dayTime.Day
                 .Should().Be(weekDay);
@@ -108,7 +71,7 @@ namespace TextProcessing.Tests
         {
             var tokens = Tokenise(text);
 
-            explicitDayTimeParser
+            ExpressionParsers.ExplicitDayTimeParser
                 .Parse(tokens)
                 .Success
                 .Should().BeFalse();
@@ -121,7 +84,7 @@ namespace TextProcessing.Tests
         {
             var tokens = Tokenise(text);
 
-            explicitDayTimeParser
+            ExpressionParsers.ExplicitDayTimeParser
                 .Parse(tokens)
                 .Success
                 .Should().BeFalse();
@@ -147,7 +110,7 @@ namespace TextProcessing.Tests
         {
             var tokens = Tokenise(text);
 
-            var result = Parser.ListOf(dayTimeParser)
+            var result = Parser.ListOf(ExpressionParsers.DayTimeParser)
                 .Parse(tokens);
 
             result.Value
@@ -162,11 +125,11 @@ namespace TextProcessing.Tests
 
             var pickupFlag = Parser
                 .IsToken<PickupFlag>()
-                .Then(_ => dayTimeParser);
+                .Then(_ => ExpressionParsers.DayTimeParser);
 
             var dropOffFlag = Parser
                 .IsToken<DropoffFlag>()
-                .Then(_ => dayTimeParser);
+                .Then(_ => ExpressionParsers.DayTimeParser);
 
             var hybrid  = pickupFlag
                 .Then(pu => dropOffFlag
@@ -186,7 +149,8 @@ namespace TextProcessing.Tests
         {
             var tokens = Tokenise(text, true);
 
-            var result = dayRangeParser
+            var result = ExpressionParsers
+                .DayRangeParser
                 .Parse(tokens)
                 .Value;
 
@@ -204,7 +168,8 @@ namespace TextProcessing.Tests
         {
             var tokens = Tokenise(text, true);
 
-            var result = timeRangeParser
+            var result = ExpressionParsers
+                .TimeRangeParser
                 .Parse(tokens)
                 .Value;
 
@@ -221,7 +186,8 @@ namespace TextProcessing.Tests
         {
             var tokens = Tokenise(text, true);
 
-            openHoursParser
+            ExpressionParsers
+                .OpenHoursParser
                 .Parse(tokens)
                 .Success.Should().BeTrue();
         }
@@ -234,7 +200,8 @@ namespace TextProcessing.Tests
         {
             var tokens = Tokenise(text, true);
 
-            tourTimesParser
+            ExpressionParsers
+                .TourTimesParser
                 .Parse(tokens)
                 .Success.Should().BeTrue();
         }
@@ -245,7 +212,8 @@ namespace TextProcessing.Tests
         {
             var tokens = Tokenise(text, true);
 
-            var result = eventTimesParser
+            var result = ExpressionParsers
+                .EventTimesParser
                 .Parse(tokens)
                 .Success.Should().BeTrue();
         }
