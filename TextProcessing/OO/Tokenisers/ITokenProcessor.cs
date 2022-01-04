@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using System.Threading.Tasks;
 
-namespace TextProcessing.OOTokenisers
+namespace TextProcessing.OO.Tokenisers
 {
     public interface ITokenProcessor
     {

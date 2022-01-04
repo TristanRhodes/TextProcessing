@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TextProcessing.Model;
-using TextProcessing.OOTokenisers;
+using TextProcessing.OO.Tokenisers;
 
-namespace TextProcessing.OOParsers
+namespace TextProcessing.OO.Parsers
 {
     public class SimpleDayTimeParser : IParser<DayTime>
     {

@@ -2,7 +2,7 @@
 using NodaTime;
 using System;
 using System.Linq;
-using TextProcessing.MonadTokenisers;
+using TextProcessing.Monad.Tokenisers;
 using Xunit;
 
 namespace TextProcessing.Tests

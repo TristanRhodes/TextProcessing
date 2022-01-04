@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using TextProcessing.OOTokenisers;
+using TextProcessing.OO.Tokenisers;
 using Xunit;
 
 namespace TextProcessing.Tests

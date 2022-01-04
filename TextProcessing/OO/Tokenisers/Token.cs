@@ -1,10 +1,11 @@
-﻿using System;
+﻿using NodaTime;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TextProcessing.MonadTokenisers
+namespace TextProcessing.OO.Tokenisers
 {
     public class Token
     {
@@ -26,16 +27,6 @@ namespace TextProcessing.MonadTokenisers
 
         public bool Is<T>() =>
             Value is T;
-
-        internal static TokenisationResult Fail(string token)
-        {
-            return new TokenisationResult(Create(token), false);
-        }
-
-        internal static TokenisationResult Success(string token, object value)
-        {
-            return new TokenisationResult(Create(token, value), true);
-        }
 
         public T As<T>() =>
             (T)Value;

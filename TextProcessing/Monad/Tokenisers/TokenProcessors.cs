@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TextProcessing.Model;
 
-namespace TextProcessing.MonadTokenisers
+namespace TextProcessing.Monad.Tokenisers
 {
     public static class TokenProcessors
     {

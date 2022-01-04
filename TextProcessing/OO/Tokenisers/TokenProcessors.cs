@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TextProcessing.Model;
 
-namespace TextProcessing.OOTokenisers
+namespace TextProcessing.OO.Tokenisers
 {
     public class WeekDayTokenProcessor : ITokenProcessor
     {

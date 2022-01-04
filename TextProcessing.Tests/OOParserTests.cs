@@ -4,8 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TextProcessing.Model;
-using TextProcessing.OOParsers;
-using TextProcessing.OOTokenisers;
+using TextProcessing.OO.Parsers;
+using TextProcessing.OO.Tokenisers;
 using Xunit;
 
 namespace TextProcessing.Tests

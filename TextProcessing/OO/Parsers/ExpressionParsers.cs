@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TextProcessing.Model;
 
-namespace TextProcessing.OOParsers
+namespace TextProcessing.OO.Parsers
 {
     public static class ExpressionParsers
     {

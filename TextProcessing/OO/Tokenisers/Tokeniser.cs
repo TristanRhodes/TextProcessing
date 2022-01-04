@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace TextProcessing.OOTokenisers
+namespace TextProcessing.OO.Tokenisers
 {
     public class Tokeniser
     {
