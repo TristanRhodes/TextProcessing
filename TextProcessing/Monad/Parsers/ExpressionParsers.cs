@@ -6,15 +6,15 @@ using System.Text;
 using System.Threading.Tasks;
 using TextProcessing.Model;
 
-namespace TextProcessing.OO.Parsers
+namespace TextProcessing.Monad.Parsers
 {
     public static class ExpressionParsers
     {
         public static Parser<DayTime> DayTimeParser =
-           new Then<DayOfWeek, DayTime>(
-               new IsToken<DayOfWeek>(),
-               dow => new Select<LocalTime, DayTime>(
-                   new IsToken<LocalTime>(),
+           Parsers.Then(
+               Parsers.IsToken<DayOfWeek>(),
+               dow => Parsers.Select(
+                   Parsers.IsToken<LocalTime>(),
                    lt => new DayTime { Day = dow, LocalTime = lt }));
 
         public static Parser<DayTime> DayTimeFluentParser =

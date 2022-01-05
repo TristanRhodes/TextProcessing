@@ -4,13 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TextProcessing.Model;
-using TextProcessing.OO.Parsers;
-using TextProcessing.OO.Tokenisers;
+using TextProcessing.Monad.Parsers;
+using TextProcessing.Monad.Tokenisers;
 using Xunit;
 
 namespace TextProcessing.Tests
 {
-    public class OOParserTests
+    public class MonadParserTests
     {
         // Separate two part element context
         //"Pickup Mon 08:00 dropoff wed 17:00"
@@ -23,26 +23,6 @@ namespace TextProcessing.Tests
 
         // Repeating complex elements
         //"Events Tuesday 18:00 Wednesday 15:00 Friday 12:00"
-
-        [Theory]
-        [InlineData("Monday 08:30am", DayOfWeek.Monday, 8, 30)]
-        [InlineData("tue 18:30", DayOfWeek.Tuesday, 18, 30)]
-        [InlineData("thurs 12:30pm", DayOfWeek.Thursday, 12, 30)]
-        [InlineData("Wed 00:30pm", DayOfWeek.Wednesday, 12, 30)]
-        [InlineData("Sat 12:30pm", DayOfWeek.Saturday, 12, 30)]
-        public void SimpleParsing(string text, DayOfWeek weekDay, int hour, int min)
-        {
-            var tokens = Tokenise(text);
-
-            var dayTime = new SimpleDayTimeParser()
-                .Parse(tokens);
-
-            dayTime.Day
-                .Should().Be(weekDay);
-
-            dayTime.LocalTime
-                .Should().Be(new LocalTime(hour, min));
-        }
 
         [Theory]
         [InlineData("Monday 08:30am", DayOfWeek.Monday, 8, 30)]
@@ -97,7 +77,7 @@ namespace TextProcessing.Tests
         {
             var tokens = Tokenise(text);
 
-            var result = Parsers.ListOf(new IsToken<int>())
+            var result = Parsers.ListOf(Parsers.IsToken<int>())
                 .Parse(tokens);
 
             result.Value
@@ -221,12 +201,12 @@ namespace TextProcessing.Tests
         private static Token[] Tokenise(string text, bool fullMatch = false)
         {
             var processor = new Tokeniser(" ",
-                new JoiningWordTokenProcessor(),
-                new HypenSymbolTokenProcessor(),
-                new FlagTokenProcessor(),
-                new WeekDayTokenProcessor(),
-                new ClockTimeTokenProcessor(),
-                new IntegerTokenProcessor());
+                TokenProcessors.JoiningWord,
+                TokenProcessors.HypenSymbol,
+                TokenProcessors.Flags,
+                TokenProcessors.WeekDay,
+                TokenProcessors.ClockTime,
+                TokenProcessors.Integer);
 
             var tokens = processor
                 .Tokenise(text)

@@ -9,6 +9,18 @@ using TextProcessing.OO.Tokenisers;
 
 namespace TextProcessing.OO.Parsers
 {
+    public static class Parsers
+    {
+        public static Parser<T> IsToken<T>() =>
+            new IsToken<T>();
+
+        public static Parser<List<T>> ListOf<T>(Parser<T> parser) =>
+            new ListOf<T>(parser);
+
+        public static Parser<T> Or<T>(params Parser<T>[] options) =>
+            new Or<T>(options);
+    }
+
     public class IsToken<T> : Parser<T>
     {
         private Func<T, bool> check;
@@ -146,65 +158,5 @@ namespace TextProcessing.OO.Parsers
 
             return ParseResult<T>.Failure(position);
         }
-    }
-
-    public class ParseResult<T>
-    {
-        T _value;
-
-        private ParseResult(Position position)
-        {
-            Position = position;
-            Success = false;
-            _value = default(T);
-        }
-
-        private ParseResult(Position position, T result)
-        {
-            Position = position;
-            Success = true;
-            _value = result;
-        }
-
-        public bool Success { get; }
-        public Position Position { get; }
-
-        public T Value => Success ? _value : throw new ArgumentException("Not Successful");
-
-        public static ParseResult<T> Successful(Position position, T t) =>
-            new ParseResult<T>(position, t);
-
-        public static ParseResult<T> Failure(Position position) =>
-            new ParseResult<T>(position);
-    }
-
-    public class Position
-    {
-        public Position(Token[] source, int ordinal)
-        {
-            Source = source;
-            Ordinal = ordinal;
-        }
-
-        public Token[] Source { get; }
-
-        public int Ordinal { get; }
-
-        public Token Current => !End ? Source[Ordinal] : throw new ApplicationException("At End");
-
-        public bool End { get; set; } = false;
-
-        public bool Beginning => Ordinal == 0;
-
-        public Position Next()
-        {
-            if (Ordinal == Source.Length - 1)
-                return new Position(Source, Source.Length) { End = true };
-
-            return new Position(Source, Ordinal + 1);
-        }
-
-        public static Position For(Token[] tokens) =>
-            new Position(tokens, 0);
     }
 }
