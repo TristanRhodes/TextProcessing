@@ -28,6 +28,16 @@ namespace TextProcessing.OO.Tokenisers
         public bool Is<T>() =>
             Value is T;
 
+        internal static TokenisationResult Fail(string token)
+        {
+            return new TokenisationResult(Create(token), false);
+        }
+
+        internal static TokenisationResult Success(string token, object value)
+        {
+            return new TokenisationResult(Create(token, value), true);
+        }
+
         public T As<T>() =>
             (T)Value;
 

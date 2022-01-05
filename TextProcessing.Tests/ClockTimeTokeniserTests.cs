@@ -21,6 +21,7 @@ namespace TextProcessing.Tests
         {
             new ClockTimeTokenParser()
                 .Tokenise(text)
+                .Token
                 .As<LocalTime>()
                 .Should().Be(new LocalTime(hour, min));
         }

@@ -5,6 +5,13 @@ using System.Text.RegularExpressions;
 
 namespace TextProcessing.OO.Tokenisers
 {
+    public interface ITokenParser
+    {
+        TokenisationResult Tokenise(string token);
+    }
+
+    public record TokenisationResult(Token Token, bool Success);
+
     public class Tokeniser
     {
         Regex _splitPattern;
@@ -22,13 +29,13 @@ namespace TextProcessing.OO.Tokenisers
             foreach(var part in parts)
             {
                 var match = _tokenisers
-                    .Where(t => t.IsMatch(part))
                     .Select(t => t.Tokenise(part))
+                    .Where(t => t.Success)
                     .FirstOrDefault();
 
                 yield return match == null ?
                     Token.Create(part) :
-                    match;
+                    match.Token;
             }
         }
     }

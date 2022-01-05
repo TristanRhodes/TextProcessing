@@ -24,6 +24,7 @@ namespace TextProcessing.Tests
         {
             new WeekDayTokenParser()
                 .Tokenise(text)
+                .Token
                 .As<DayOfWeek>()
                 .Should().Be(dayOfWeek);
         }
