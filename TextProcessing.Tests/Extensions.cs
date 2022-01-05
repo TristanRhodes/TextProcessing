@@ -13,7 +13,7 @@ namespace TextProcessing.Tests
         {
             return parser
                 .Tokenise(text)
-                .Success;
+                .Successful;
         }
     }
 }

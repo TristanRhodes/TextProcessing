@@ -38,16 +38,16 @@ namespace TextProcessing.Monad.Tokenisers
             var match = regex.Match(token);
 
             if (!match.Success)
-                return Token.Fail(token);
+                return TokenisationResult.Fail();
 
             var day = DayGroupMap
                 .Where(kvp => match.HasGroupMatch(kvp.Key))
                 .Select(kvp => (DayOfWeek?)kvp.Value)
                 .SingleOrDefault();
 
-            return (day is not null) ? 
-                Token.Success(token, day) :
-                Token.Fail(token);
+            return (day is not null) ?
+                TokenisationResult.Success(day) :
+                TokenisationResult.Fail();
         };
 
         public static TokenParser WeekDayDelegate = Tokeniser
@@ -60,8 +60,8 @@ namespace TextProcessing.Monad.Tokenisers
                     .SingleOrDefault();
 
                 return (day is not null) ?
-                    Token.Success(match.Value, day) :
-                    Token.Fail(match.Value);
+                    TokenisationResult.Success(day) :
+                    TokenisationResult.Fail();
             });
 
         public static TokenParser Flags = Tokeniser
@@ -74,23 +74,23 @@ namespace TextProcessing.Monad.Tokenisers
                     .SingleOrDefault();
 
                 return (flag is not null) ?
-                    Token.Success(match.Value, flag) :
-                    Token.Fail(match.Value);
-        }   );
+                    TokenisationResult.Success(flag) :
+                    TokenisationResult.Fail();
+            }   );
 
         public static TokenParser JoiningWord = Tokeniser
             .FromRegex(@"^[Tt]o$", match =>
-                Token.Success(match.Value, new JoiningWord()));
+                TokenisationResult.Success(new JoiningWord()));
 
         public static TokenParser HypenSymbol = Tokeniser
-            .FromChar('-', c => 
-                Token.Success(c.ToString(), new HypenSymbol()));
+            .FromChar('-', c =>
+                TokenisationResult.Success(new HypenSymbol()));
         
         public static TokenParser Integer = (string token) =>
         {
-            return int.TryParse(token, out int result) ? 
-                Token.Success(token, result) : 
-                Token.Fail(token);
+            return int.TryParse(token, out int result) ?
+                TokenisationResult.Success(result) :
+                TokenisationResult.Fail();
         };
 
         public static TokenParser ClockTime = Tokeniser
@@ -105,18 +105,18 @@ namespace TextProcessing.Monad.Tokenisers
 
                 if (twentyFourHr)
                 {
-                    return Token.Success(match.Value, new LocalTime(hour, min));
+                    return TokenisationResult.Success(new LocalTime(hour, min));
                 }
                 if (am)
                 {
-                    return Token.Success(match.Value, new LocalTime(hour == 12 ? 0 : hour, min));
+                    return TokenisationResult.Success(new LocalTime(hour == 12 ? 0 : hour, min));
                 }
                 else if (pm)
                 {
-                    return Token.Success(match.Value, new LocalTime(hour == 12 ? 12 : hour + 12, min));
+                    return TokenisationResult.Success(new LocalTime(hour == 12 ? 12 : hour + 12, min));
                 }
 
-                return Token.Fail(match.Value);
+                return TokenisationResult.Fail();
             });
     }
 

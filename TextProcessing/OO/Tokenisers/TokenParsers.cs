@@ -28,7 +28,7 @@ namespace TextProcessing.OO.Tokenisers
         {
             var match = regex.Match(token);
             if (!match.Success)
-                return Token.Fail(token);
+                return TokenisationResult.Fail();
 
             var day = DayGroupMap
                 .Where(kvp => match.Groups[kvp.Key].Success)
@@ -36,8 +36,8 @@ namespace TextProcessing.OO.Tokenisers
                 .SingleOrDefault();
 
             return (day is not null) ?
-                Token.Success(token, day) :
-                Token.Fail(token);
+                TokenisationResult.Success(day) :
+                TokenisationResult.Fail();
         }
     }
 
@@ -48,9 +48,9 @@ namespace TextProcessing.OO.Tokenisers
         public TokenisationResult Tokenise(string token)
         {
             if (!regex.IsMatch(token))
-                return Token.Fail(token);
+                return TokenisationResult.Fail();
 
-            return Token.Success(token, new JoiningWord());
+            return TokenisationResult.Success(new JoiningWord());
         }
     }
 
@@ -63,21 +63,21 @@ namespace TextProcessing.OO.Tokenisers
             var match = regex.Match(token);
 
             if (match.Groups["pickup"].Success)
-                return Token.Success(token, new PickupFlag());
+                return TokenisationResult.Success(new PickupFlag());
 
             if (match.Groups["dropoff"].Success)
-                return Token.Success(token, new DropoffFlag());
+                return TokenisationResult.Success(new DropoffFlag());
 
             if (match.Groups["open"].Success)
-                return Token.Success(token, new OpenFlag());
+                return TokenisationResult.Success(new OpenFlag());
 
             if (match.Groups["tours"].Success)
-                return Token.Success(token, new ToursFlag());
+                return TokenisationResult.Success(new ToursFlag());
 
             if (match.Groups["events"].Success)
-                return Token.Success(token, new EventsFlag());
+                return TokenisationResult.Success(new EventsFlag());
 
-            return Token.Fail(token);
+            return TokenisationResult.Fail();
         }
     }
 
@@ -86,8 +86,8 @@ namespace TextProcessing.OO.Tokenisers
         public TokenisationResult Tokenise(string token)
         {
             return int.TryParse(token, out int i) ?
-                Token.Success(token, i) :
-                Token.Fail(token);
+                TokenisationResult.Success(i) :
+                TokenisationResult.Fail();
         }
     }
 
@@ -96,8 +96,8 @@ namespace TextProcessing.OO.Tokenisers
         public TokenisationResult Tokenise(string token)
         {
             return token == "-" ?
-                Token.Success(token, new HypenSymbol()) :
-                Token.Fail(token);
+                TokenisationResult.Success(new HypenSymbol()) :
+                TokenisationResult.Fail();
         }
     }
 
@@ -109,7 +109,7 @@ namespace TextProcessing.OO.Tokenisers
         {
             var match = regex.Match(token);
             if (!match.Success)
-                return Token.Fail(token);
+                return TokenisationResult.Fail();
 
             var hour = int.Parse(match.Groups["hr"].Value);
             var min = int.Parse(match.Groups["min"].Value);
@@ -119,18 +119,18 @@ namespace TextProcessing.OO.Tokenisers
 
             if (twentyFourHr)
             {
-                return Token.Success(token, new LocalTime(hour, min));
+                return TokenisationResult.Success(new LocalTime(hour, min));
             }
             if (am)
             {
-                return Token.Success(token, new LocalTime(hour == 12 ? 0 : hour, min));
+                return TokenisationResult.Success(new LocalTime(hour == 12 ? 0 : hour, min));
             }
             else if (pm)
             {
-                return Token.Success(token, new LocalTime(hour == 12 ? 12 : hour + 12, min));
+                return TokenisationResult.Success(new LocalTime(hour == 12 ? 12 : hour + 12, min));
             }
 
-            return Token.Fail(token);
+            return TokenisationResult.Fail();
         }
     }
 }

@@ -10,7 +10,30 @@ namespace TextProcessing.OO.Tokenisers
         TokenisationResult Tokenise(string token);
     }
 
-    public record TokenisationResult(Token Token, bool Success);
+    public class TokenisationResult
+    {
+        Token _token;
+
+        public TokenisationResult() 
+        {
+            Successful = false;
+        }
+        public TokenisationResult(Token token)
+        {
+            _token = token;
+            Successful = true;
+        }
+
+        public Token Token => Successful ? _token : throw new ApplicationException("Not Successful");
+
+        public bool Successful  { get; init; }
+
+        public static TokenisationResult Fail() =>
+            new TokenisationResult();
+
+        public static TokenisationResult Success(object value) =>
+            new TokenisationResult(Token.Create(value));
+    }
 
     public class Tokeniser
     {
@@ -30,7 +53,7 @@ namespace TextProcessing.OO.Tokenisers
             {
                 var match = _tokenisers
                     .Select(t => t.Tokenise(part))
-                    .Where(t => t.Success)
+                    .Where(t => t.Successful)
                     .FirstOrDefault();
 
                 yield return match == null ?
