@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace TextProcessing.Monad.Tokenisers
+namespace TextProcessing.Functional.Tokenisers
 {
     public delegate TokenisationResult TokenParser(string token);
 

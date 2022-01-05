@@ -1,7 +1,7 @@
 ﻿using System;
-using TextProcessing.Monad.Tokenisers;
+using TextProcessing.Functional.Tokenisers;
 
-namespace TextProcessing.Monad.Parsers
+namespace TextProcessing.Functional.Parsers
 {
     public static class ParserExtensions
     {

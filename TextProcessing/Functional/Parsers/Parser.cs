@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TextProcessing.Monad.Tokenisers;
+using TextProcessing.Functional.Tokenisers;
 
-namespace TextProcessing.Monad.Parsers
+namespace TextProcessing.Functional.Parsers
 {
     public delegate ParseResult<T> Parser<T>(Position position);
 

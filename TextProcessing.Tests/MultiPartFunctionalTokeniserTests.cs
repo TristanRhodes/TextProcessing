@@ -2,12 +2,12 @@
 using NodaTime;
 using System;
 using System.Linq;
-using TextProcessing.Monad.Tokenisers;
+using TextProcessing.Functional.Tokenisers;
 using Xunit;
 
 namespace TextProcessing.Tests
 {
-    public class MultiPartMonadTokeniserTests
+    public class MultiPartFunctionalTokeniserTests
     {
         [Theory]
         [InlineData("Monday 08:30am", DayOfWeek.Monday, 8, 30)]

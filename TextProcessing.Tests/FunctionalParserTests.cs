@@ -4,13 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TextProcessing.Model;
-using TextProcessing.Monad.Parsers;
-using TextProcessing.Monad.Tokenisers;
+using TextProcessing.Functional.Parsers;
+using TextProcessing.Functional.Tokenisers;
 using Xunit;
 
 namespace TextProcessing.Tests
 {
-    public class MonadParserTests
+    public class FunctionalParserTests
     {
         // Separate two part element context
         //"Pickup Mon 08:00 dropoff wed 17:00"

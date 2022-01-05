@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TextProcessing.Monad.Parsers
+namespace TextProcessing.Functional.Parsers
 {
     public static class Parsers
     {
