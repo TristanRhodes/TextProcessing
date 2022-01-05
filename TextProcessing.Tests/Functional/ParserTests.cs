@@ -4,13 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TextProcessing.Model;
-using TextProcessing.OO.Parsers;
-using TextProcessing.OO.Tokenisers;
+using TextProcessing.Functional.Parsers;
+using TextProcessing.Functional.Tokenisers;
 using Xunit;
 
-namespace TextProcessing.Tests
+namespace TextProcessing.Tests.Functional
 {
-    public class OOParserTests
+    public class ParserTests
     {
         // Separate two part element context
         //"Pickup Mon 08:00 dropoff wed 17:00"
@@ -23,7 +23,6 @@ namespace TextProcessing.Tests
 
         // Repeating complex elements
         //"Events Tuesday 18:00 Wednesday 15:00 Friday 12:00"
-
 
         [Theory]
         [InlineData("Monday 08:30am", DayOfWeek.Monday, 8, 30)]
@@ -78,7 +77,7 @@ namespace TextProcessing.Tests
         {
             var tokens = Tokenise(text);
 
-            var result = Parsers.ListOf(new IsToken<int>())
+            var result = Parsers.ListOf(Parsers.IsToken<int>())
                 .Parse(tokens);
 
             result.Value
@@ -202,12 +201,12 @@ namespace TextProcessing.Tests
         private static Token[] Tokenise(string text, bool fullMatch = false)
         {
             var processor = new Tokeniser(" ",
-                new JoiningWordTokenParser(),
-                new HypenSymbolTokenParser(),
-                new FlagTokenParser(),
-                new WeekDayTokenParser(),
-                new ClockTimeTokenParser(),
-                new IntegerTokenParser());
+                TokenParsers.JoiningWord,
+                TokenParsers.HypenSymbol,
+                TokenParsers.Flags,
+                TokenParsers.WeekDay,
+                TokenParsers.ClockTime,
+                TokenParsers.Integer);
 
             var tokens = processor
                 .Tokenise(text)

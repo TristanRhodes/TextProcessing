@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using TextProcessing.SpracheParsers;
 using Xunit;
 
-namespace TextProcessing.Tests
+namespace TextProcessing.Tests.SpracheParsers
 {
     public class SpracheTests
     {

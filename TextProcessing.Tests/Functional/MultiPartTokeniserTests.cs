@@ -5,9 +5,9 @@ using System.Linq;
 using TextProcessing.Functional.Tokenisers;
 using Xunit;
 
-namespace TextProcessing.Tests
+namespace TextProcessing.Tests.Functional
 {
-    public class MultiPartFunctionalTokeniserTests
+    public class MultiPartTokeniserTests
     {
         [Theory]
         [InlineData("Monday 08:30am", DayOfWeek.Monday, 8, 30)]

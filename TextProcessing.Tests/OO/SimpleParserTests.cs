@@ -10,7 +10,7 @@ using TextProcessing.OO.SimpleParsers;
 using TextProcessing.OO.Tokenisers;
 using Xunit;
 
-namespace TextProcessing.Tests
+namespace TextProcessing.Tests.OO
 {
     public class SimpleParserTests
     {

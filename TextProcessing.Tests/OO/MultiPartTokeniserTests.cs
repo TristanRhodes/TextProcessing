@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 using TextProcessing.OO.Tokenisers;
 using Xunit;
 
-namespace TextProcessing.Tests
+namespace TextProcessing.Tests.OO
 {
-    public class MultiPartOOTokeniserTests
+    public class MultiPartTokeniserTests
     {
         [Theory]
         [InlineData("Monday 08:30am", DayOfWeek.Monday, 8, 30)]
