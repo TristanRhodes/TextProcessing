@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 
 namespace TextProcessing.Monad.Tokenisers
 {
-    public delegate TokenisationResult TokenProcessor(string token);
+    public delegate TokenisationResult TokenParser(string token);
 
     public record TokenisationResult(Token Token, bool Success);
 
     public class Tokeniser
     {
         Regex _splitPattern;
-        IList<TokenProcessor> _tokenisers;
+        IList<TokenParser> _tokenisers;
 
-        public Tokeniser(string splitPattern, params TokenProcessor[] tokenisers)
+        public Tokeniser(string splitPattern, params TokenParser[] tokenisers)
         {
             _splitPattern = new Regex(splitPattern);
             _tokenisers = tokenisers.ToList();
@@ -38,7 +38,7 @@ namespace TextProcessing.Monad.Tokenisers
             }
         }
 
-        public static TokenProcessor FromRegex(string pattern, Func<Match, TokenisationResult> resolver)
+        public static TokenParser FromRegex(string pattern, Func<Match, TokenisationResult> resolver)
         {
             var regex = new Regex(pattern);
             return (string token) =>
@@ -52,7 +52,7 @@ namespace TextProcessing.Monad.Tokenisers
             };
         }
 
-        public static TokenProcessor FromChar(char c, Func<char, TokenisationResult> resolver)
+        public static TokenParser FromChar(char c, Func<char, TokenisationResult> resolver)
         {
             return (string token) =>
             {

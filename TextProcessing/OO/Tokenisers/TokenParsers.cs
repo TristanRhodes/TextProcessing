@@ -9,7 +9,7 @@ using TextProcessing.Model;
 
 namespace TextProcessing.OO.Tokenisers
 {
-    public class WeekDayTokenProcessor : ITokenProcessor
+    public class WeekDayTokenParser : ITokenParser
     {
         static Dictionary<string, DayOfWeek> DayGroupMap = new Dictionary<string, DayOfWeek>()
         {
@@ -47,7 +47,7 @@ namespace TextProcessing.OO.Tokenisers
         }
     }
 
-    public class JoiningWordTokenProcessor : ITokenProcessor
+    public class JoiningWordTokenParser : ITokenParser
     {
         Regex regex = new Regex(@"^[Tt]o$");
 
@@ -65,7 +65,7 @@ namespace TextProcessing.OO.Tokenisers
         }
     }
 
-    public class FlagTokenProcessor : ITokenProcessor
+    public class FlagTokenParser : ITokenParser
     {
         Regex regex = new Regex(@"^(?<pickup>[Pp]ickup)|(?<dropoff>[Dd]ropoff)|(?<open>[Oo]pen)|(?<tours>[Tt]ours)|(?<events>[Ee]vents)$");
 
@@ -97,7 +97,7 @@ namespace TextProcessing.OO.Tokenisers
         }
     }
 
-    public class IntegerTokenProcessor : ITokenProcessor
+    public class IntegerTokenParser : ITokenParser
     {
         public bool IsMatch(string token)
         {
@@ -113,7 +113,7 @@ namespace TextProcessing.OO.Tokenisers
         }
     }
 
-    public class HypenSymbolTokenProcessor : ITokenProcessor
+    public class HypenSymbolTokenParser : ITokenParser
     {
         public bool IsMatch(string token)
         {
@@ -129,7 +129,7 @@ namespace TextProcessing.OO.Tokenisers
         }
     }
 
-    public class ClockTimeTokenProcessor : ITokenProcessor
+    public class ClockTimeTokenParser : ITokenParser
     {
         Regex regex = new Regex(@"^(((?<hr>[01]?\d|2[0-3]):(?<min>[0-5]\d|60))|((?<hr>([0]?\d)|1[0-2]):(?<min>[0-5]\d|60)((?<am>am)|(?<pm>pm))))?$");
 

@@ -22,7 +22,7 @@ namespace TextProcessing.Tests
         [InlineData("Sat", DayOfWeek.Saturday)]
         public void DayMatch(string text, DayOfWeek dayOfWeek)
         {
-            new WeekDayTokenProcessor()
+            new WeekDayTokenParser()
                 .Tokenise(text)
                 .As<DayOfWeek>()
                 .Should().Be(dayOfWeek);

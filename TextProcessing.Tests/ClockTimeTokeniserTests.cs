@@ -19,7 +19,7 @@ namespace TextProcessing.Tests
         [InlineData("18:30", 18, 30)]
         public void TimeConvertTest(string text, int hour, int min)
         {
-            new ClockTimeTokenProcessor()
+            new ClockTimeTokenParser()
                 .Tokenise(text)
                 .As<LocalTime>()
                 .Should().Be(new LocalTime(hour, min));
@@ -37,7 +37,7 @@ namespace TextProcessing.Tests
         [InlineData("20:30ampm")]
         public void BadFormatConversion(string text)
         {
-            new ClockTimeTokenProcessor()
+            new ClockTimeTokenParser()
                 .IsMatch(text)
                 .Should().BeFalse();
         }
@@ -49,7 +49,7 @@ namespace TextProcessing.Tests
         [InlineData("13:01pm")]
         public void Bad12HourConversion(string text)
         {
-            new ClockTimeTokenProcessor()
+            new ClockTimeTokenParser()
                 .IsMatch(text)
                 .Should().BeFalse();
         }
@@ -61,7 +61,7 @@ namespace TextProcessing.Tests
         [InlineData("25:01")]
         public void Bad24HourConversion(string text)
         {
-            new ClockTimeTokenProcessor()
+            new ClockTimeTokenParser()
                 .IsMatch(text)
                 .Should().BeFalse();
         }

@@ -9,7 +9,7 @@ using TextProcessing.Model;
 
 namespace TextProcessing.Monad.Tokenisers
 {
-    public static class TokenProcessors
+    public static class TokenParsers
     {
         static Dictionary<string, DayOfWeek> DayGroupMap = new Dictionary<string, DayOfWeek>()
         {
@@ -31,7 +31,7 @@ namespace TextProcessing.Monad.Tokenisers
             { "events", () => new EventsFlag() }
         };
 
-        public static TokenProcessor WeekDay = (string token) =>
+        public static TokenParser WeekDay = (string token) =>
         {
             Regex regex = new Regex("^(?<Monday>[Mm]on(day)?)|(?<Tuesday>[Tt]ue(sday)?)|(?<Wednesday>[Ww]ed(nesday)?)|(?<Thursday>[Tt]hu(rs(day)?)?)|(?<Friday>[Ff]ri(day)?)|(?<Saturday>[Ss]at(urday)?)|(?<Sunday>[Ss]un(day)?)$");
 
@@ -50,7 +50,7 @@ namespace TextProcessing.Monad.Tokenisers
                 Token.Fail(token);
         };
 
-        public static TokenProcessor WeekDayDelegate = Tokeniser
+        public static TokenParser WeekDayDelegate = Tokeniser
             .FromRegex("^(?<Monday>[Mm]on(day)?)|(?<Tuesday>[Tt]ue(sday)?)|(?<Wednesday>[Ww]ed(nesday)?)|(?<Thursday>[Tt]hu(rs(day)?)?)|(?<Friday>[Ff]ri(day)?)|(?<Saturday>[Ss]at(urday)?)|(?<Sunday>[Ss]un(day)?)$", 
             match =>
             {
@@ -64,7 +64,7 @@ namespace TextProcessing.Monad.Tokenisers
                     Token.Fail(match.Value);
             });
 
-        public static TokenProcessor Flags = Tokeniser
+        public static TokenParser Flags = Tokeniser
             .FromRegex(@"^(?<pickup>[Pp]ickup)|(?<dropoff>[Dd]ropoff)|(?<open>[Oo]pen)|(?<tours>[Tt]ours)|(?<events>[Ee]vents)$", 
             match =>
             { 
@@ -78,22 +78,22 @@ namespace TextProcessing.Monad.Tokenisers
                     Token.Fail(match.Value);
         }   );
 
-        public static TokenProcessor JoiningWord = Tokeniser
+        public static TokenParser JoiningWord = Tokeniser
             .FromRegex(@"^[Tt]o$", match =>
                 Token.Success(match.Value, new JoiningWord()));
 
-        public static TokenProcessor HypenSymbol = Tokeniser
+        public static TokenParser HypenSymbol = Tokeniser
             .FromChar('-', c => 
                 Token.Success(c.ToString(), new HypenSymbol()));
         
-        public static TokenProcessor Integer = (string token) =>
+        public static TokenParser Integer = (string token) =>
         {
             return int.TryParse(token, out int result) ? 
                 Token.Success(token, result) : 
                 Token.Fail(token);
         };
 
-        public static TokenProcessor ClockTime = Tokeniser
+        public static TokenParser ClockTime = Tokeniser
             .FromRegex(@"^(((?<hr>[01]?\d|2[0-3]):(?<min>[0-5]\d|60))|((?<hr>([0]?\d)|1[0-2]):(?<min>[0-5]\d|60)((?<am>am)|(?<pm>pm))))?$", 
             match =>
             {

@@ -201,12 +201,12 @@ namespace TextProcessing.Tests
         private static Token[] Tokenise(string text, bool fullMatch = false)
         {
             var processor = new Tokeniser(" ",
-                TokenProcessors.JoiningWord,
-                TokenProcessors.HypenSymbol,
-                TokenProcessors.Flags,
-                TokenProcessors.WeekDay,
-                TokenProcessors.ClockTime,
-                TokenProcessors.Integer);
+                TokenParsers.JoiningWord,
+                TokenParsers.HypenSymbol,
+                TokenParsers.Flags,
+                TokenParsers.WeekDay,
+                TokenParsers.ClockTime,
+                TokenParsers.Integer);
 
             var tokens = processor
                 .Tokenise(text)

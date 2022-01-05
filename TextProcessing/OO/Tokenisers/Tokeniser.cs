@@ -8,9 +8,9 @@ namespace TextProcessing.OO.Tokenisers
     public class Tokeniser
     {
         Regex _splitPattern;
-        IList<ITokenProcessor> _tokenisers;
+        IList<ITokenParser> _tokenisers;
 
-        public Tokeniser(string splitPattern, params ITokenProcessor[] tokenisers)
+        public Tokeniser(string splitPattern, params ITokenParser[] tokenisers)
         {
             _splitPattern = new Regex(splitPattern);
             _tokenisers = tokenisers.ToList();
