@@ -11,24 +11,24 @@ namespace TextProcessing.OO.Parsers
 {
     public static class Parsers
     {
-        public static Parser<T> IsToken<T>() =>
+        public static IParser<T> IsToken<T>() =>
             new IsToken<T>();
 
-        public static Parser<List<T>> ListOf<T>(Parser<T> parser) =>
+        public static IParser<List<T>> ListOf<T>(IParser<T> parser) =>
             new ListOf<T>(parser);
 
-        public static Parser<T> Or<T>(params Parser<T>[] options) =>
+        public static IParser<T> Or<T>(params IParser<T>[] options) =>
             new Or<T>(options);
     }
 
-    public class IsToken<T> : Parser<T>
+    public class IsToken<T> : IParser<T>
     {
         private Func<T, bool> check;
         public IsToken() { }
         public IsToken(Func<T, bool> check) => 
             this.check = check;
 
-        public override ParseResult<T> Parse(Position position)
+        public ParseResult<T> Parse(Position position)
         {
             if (!position.Current.Is<T>())
                 return ParseResult<T>.Failure(position);
@@ -40,14 +40,14 @@ namespace TextProcessing.OO.Parsers
         }
     }
 
-    public class End<T> : Parser<T>
+    public class End<T> : IParser<T>
     {
-        Parser<T> _core;
+        IParser<T> _core;
 
-        public End(Parser<T> parser) =>
+        public End(IParser<T> parser) =>
             _core = parser;
 
-        public override ParseResult<T> Parse(Position position)
+        public ParseResult<T> Parse(Position position)
         {
             var result = _core.Parse(position);
             if (!result.Success)
@@ -59,14 +59,14 @@ namespace TextProcessing.OO.Parsers
         }
     }
 
-    public class ListOf<T> : Parser<List<T>>
+    public class ListOf<T> : IParser<List<T>>
     {
-        Parser<T> _core;
+        IParser<T> _core;
 
-        public ListOf(Parser<T> parser) =>
+        public ListOf(IParser<T> parser) =>
             _core = parser;
 
-        public override ParseResult<List<T>> Parse(Position position)
+        public ParseResult<List<T>> Parse(Position position)
         {
             var list = new List<T>();
 
@@ -90,18 +90,18 @@ namespace TextProcessing.OO.Parsers
         }
     }
 
-    public class Select<T, U> : Parser<U>
+    public class Select<T, U> : IParser<U>
     {
-        Parser<T> _core;
+        IParser<T> _core;
         Func<T, U> _converter;
 
-        public Select(Parser<T> core, Func<T, U> converter)
+        public Select(IParser<T> core, Func<T, U> converter)
         {
             _core = core;
             _converter = converter;
         }
 
-        public override ParseResult<U> Parse(Position position)
+        public ParseResult<U> Parse(Position position)
         {
             var result = _core.Parse(position);
             position = result.Position;
@@ -112,18 +112,18 @@ namespace TextProcessing.OO.Parsers
         }
     }
 
-    public class Then<T, U> : Parser<U>
+    public class Then<T, U> : IParser<U>
     {
-        Parser<T> _core;
-        Func<T, Parser<U>> _second;
+        IParser<T> _core;
+        Func<T, IParser<U>> _second;
 
-        public Then(Parser<T> core, Func<T, Parser<U>> second)
+        public Then(IParser<T> core, Func<T, IParser<U>> second)
         {
             _core = core;
             _second = second;
         }
 
-        public override ParseResult<U> Parse(Position position)
+        public ParseResult<U> Parse(Position position)
         {
             var result = _core.Parse(position);
             position = result.Position;
@@ -141,13 +141,13 @@ namespace TextProcessing.OO.Parsers
         }
     }
 
-    public class Or<T> : Parser<T>
+    public class Or<T> : IParser<T>
     {
-        Parser<T>[] _options;
+        IParser<T>[] _options;
 
-        public Or(params Parser<T>[] options) => _options = options;
+        public Or(params IParser<T>[] options) => _options = options;
 
-        public override ParseResult<T> Parse(Position position)
+        public ParseResult<T> Parse(Position position)
         {
             foreach(var parser in _options)
             {

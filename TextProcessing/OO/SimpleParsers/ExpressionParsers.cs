@@ -8,9 +8,9 @@ namespace TextProcessing.OO.SimpleParsers
     /// <summary>
     /// Demo parser for most naive approach
     /// </summary>
-    public class SimpleDayTimeParser : Parser<DayTime>
+    public class SimpleDayTimeParser : IParser<DayTime>
     {
-        public override ParseResult<DayTime> Parse(Token[] tokens)
+        public ParseResult<DayTime> Parse(Token[] tokens)
         {
             if (tokens.Length != 2)
                 return ParseResult<DayTime>.Failure();

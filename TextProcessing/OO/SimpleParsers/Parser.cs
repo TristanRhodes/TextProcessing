@@ -3,9 +3,9 @@ using TextProcessing.OO.Tokenisers;
 
 namespace TextProcessing.OO.SimpleParsers
 {
-    public abstract class Parser<T>
+    public interface IParser<T>
     {
-        public abstract ParseResult<T> Parse(Token[] tokens);
+        ParseResult<T> Parse(Token[] tokens);
     }
 
     public class ParseResult<T>

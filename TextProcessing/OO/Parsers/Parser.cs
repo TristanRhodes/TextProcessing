@@ -9,9 +9,9 @@ using TextProcessing.OO.Tokenisers;
 
 namespace TextProcessing.OO.Parsers
 {
-    public abstract class Parser<T>
+    public interface IParser<T>
     {
-        public abstract ParseResult<T> Parse(Position position);
+        ParseResult<T> Parse(Position position);
     }
 
     public class ParseResult<T>

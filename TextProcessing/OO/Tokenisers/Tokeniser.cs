@@ -5,6 +5,34 @@ using System.Text.RegularExpressions;
 
 namespace TextProcessing.OO.Tokenisers
 {
+    public class Tokeniser
+    {
+        Regex _splitPattern;
+        IList<ITokenParser> _tokenisers;
+
+        public Tokeniser(string splitPattern, params ITokenParser[] tokenisers)
+        {
+            _splitPattern = new Regex(splitPattern);
+            _tokenisers = tokenisers.ToList();
+        }
+
+        public IEnumerable<Token> Tokenise(string inputString)
+        {
+            var parts = _splitPattern.Split(inputString);
+            foreach (var part in parts)
+            {
+                var match = _tokenisers
+                    .Select(t => t.Tokenise(part))
+                    .Where(t => t.Successful)
+                    .FirstOrDefault();
+
+                yield return match == null ?
+                    Token.Create(part) :
+                    match.Token;
+            }
+        }
+    }
+
     public interface ITokenParser
     {
         TokenisationResult Tokenise(string token);
@@ -35,31 +63,5 @@ namespace TextProcessing.OO.Tokenisers
             new TokenisationResult(Token.Create(value));
     }
 
-    public class Tokeniser
-    {
-        Regex _splitPattern;
-        IList<ITokenParser> _tokenisers;
 
-        public Tokeniser(string splitPattern, params ITokenParser[] tokenisers)
-        {
-            _splitPattern = new Regex(splitPattern);
-            _tokenisers = tokenisers.ToList();
-        }
-
-        public IEnumerable<Token> Tokenise(string inputString)
-        {
-            var parts = _splitPattern.Split(inputString);
-            foreach(var part in parts)
-            {
-                var match = _tokenisers
-                    .Select(t => t.Tokenise(part))
-                    .Where(t => t.Successful)
-                    .FirstOrDefault();
-
-                yield return match == null ?
-                    Token.Create(part) :
-                    match.Token;
-            }
-        }
-    }
 }
