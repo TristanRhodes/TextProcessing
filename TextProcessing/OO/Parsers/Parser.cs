@@ -58,17 +58,12 @@ namespace TextProcessing.OO.Parsers
 
         public Token Current => !End ? Source[Ordinal] : throw new ApplicationException("At End");
 
-        public bool End { get; set; } = false;
+        public bool End => (Ordinal == Source.Length);
 
         public bool Beginning => Ordinal == 0;
 
-        public Position Next()
-        {
-            if (Ordinal == Source.Length - 1)
-                return new Position(Source, Source.Length) { End = true };
-
-            return new Position(Source, Ordinal + 1);
-        }
+        public Position Next() =>
+            new Position(Source, Ordinal + 1);
 
         public static Position For(Token[] tokens) =>
             new Position(tokens, 0);
