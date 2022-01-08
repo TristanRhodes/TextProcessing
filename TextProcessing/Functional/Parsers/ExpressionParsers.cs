@@ -58,5 +58,18 @@ namespace TextProcessing.Functional.Parsers
             Parsers.IsToken<EventsFlag>().Then(_ =>
                 Parsers.ListOf(DayTimeParser)
                     .Select(times => times));
+
+        public static Parser<DayTime> PickupDayTime = Parsers
+            .IsToken<PickupFlag>()
+            .Then(_ => DayTimeParser);
+
+        public static Parser<DayTime> DropOffDayTime = Parsers
+            .IsToken<DropoffFlag>()
+            .Then(_ => DayTimeParser);
+
+        public static Parser<PickupDropoff> PickupDropOff = PickupDayTime
+            .Then(pu => DropOffDayTime
+            .Select(dr => new PickupDropoff { Pickup = pu, DropOff = dr }))
+            .End();
     }
 }

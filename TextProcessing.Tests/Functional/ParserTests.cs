@@ -103,23 +103,22 @@ namespace TextProcessing.Tests.Functional
         {
             var tokens = Tokenise(text);
 
-            var pickupFlag = Parsers
-                .IsToken<PickupFlag>()
-                .Then(_ => ExpressionParsers.DayTimeParser);
+            var result = ExpressionParsers
+                .PickupDropOff
+                .Parse(tokens)
+                .Value;
 
-            var dropOffFlag = Parsers
-                .IsToken<DropoffFlag>()
-                .Then(_ => ExpressionParsers.DayTimeParser);
+            result.Pickup.Day
+                .Should().Be(DayOfWeek.Monday);
 
-            var hybrid  = pickupFlag
-                .Then(pu => dropOffFlag
-                .Select(dr => new PickupDropoff { Pickup = pu, DropOff = dr }))
-                .End();
+            result.Pickup.LocalTime
+                .Should().Be(new LocalTime(08, 00));
 
-            var pickupResult = hybrid
-                .Parse(tokens);
+            result.DropOff.Day
+                .Should().Be(DayOfWeek.Wednesday);
 
-            pickupResult.Success.Should().BeTrue();
+            result.DropOff.LocalTime
+                .Should().Be(new LocalTime(17, 00));
         }
 
         [Theory]

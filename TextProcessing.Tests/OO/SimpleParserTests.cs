@@ -55,6 +55,7 @@ namespace TextProcessing.Tests.OO
             result.Success
                 .Should().BeFalse();
         }
+
         private static Token[] Tokenise(string text, bool fullMatch = false)
         {
             var processor = new Tokeniser(" ",
