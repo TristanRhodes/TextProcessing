@@ -85,7 +85,9 @@ namespace TextProcessing.Tests.Functional
         }
 
         [Theory]
-        [InlineData("tue 18:30 tue 18:30 tue 18:30")]
+        [InlineData("tue 06:30pm")]
+        [InlineData("tue 06:30pm Tue 18:30")]
+        [InlineData("tue 06:30pm Tue 18:30 Tuesday 18:30")]
         public void ListDayTimes(string text)
         {
             var tokens = Tokenise(text);
@@ -94,7 +96,11 @@ namespace TextProcessing.Tests.Functional
                 .Parse(tokens);
 
             result.Value
-                .Should().HaveCount(3);
+                .ForEach(dt =>
+                {
+                    dt.Day.Should().Be(DayOfWeek.Tuesday);
+                    dt.LocalTime.Should().Be(new LocalTime(18, 30));
+                });
         }
 
         [Theory]
