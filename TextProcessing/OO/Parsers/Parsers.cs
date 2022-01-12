@@ -23,20 +23,13 @@ namespace TextProcessing.OO.Parsers
 
     public class IsToken<T> : IParser<T>
     {
-        private Func<T, bool> check;
         public IsToken() { }
-        public IsToken(Func<T, bool> check) => 
-            this.check = check;
 
         public ParseResult<T> Parse(Position position)
         {
-            if (!position.Current.Is<T>())
-                return ParseResult<T>.Failure(position);
-
-            if (check != null && !check(position.Current.As<T>()))
-                return ParseResult<T>.Failure(position);
-
-            return ParseResult<T>.Successful(position.Next(), position.Current.As<T>());
+            return position.Current.Is<T>() ?
+                ParseResult<T>.Successful(position.Next(), position.Current.As<T>()) :
+                ParseResult<T>.Failure(position);
         }
     }
 
@@ -114,18 +107,18 @@ namespace TextProcessing.OO.Parsers
 
     public class Then<T, U> : IParser<U>
     {
-        IParser<T> _core;
+        IParser<T> _first;
         Func<T, IParser<U>> _second;
 
-        public Then(IParser<T> core, Func<T, IParser<U>> second)
+        public Then(IParser<T> first, Func<T, IParser<U>> second)
         {
-            _core = core;
+            _first = first;
             _second = second;
         }
 
         public ParseResult<U> Parse(Position position)
         {
-            var result = _core.Parse(position);
+            var result = _first.Parse(position);
             position = result.Position;
 
             if (!result.Success)
