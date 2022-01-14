@@ -10,10 +10,9 @@ namespace TextProcessing.Functional.Parsers
     {
         public static Parser<T> IsToken<T>() => (Position position) =>
         {
-            if (!position.Current.Is<T>())
-                return ParseResult<T>.Failure(position);
-
-            return ParseResult<T>.Successful(position.Next(), position.Current.As<T>());
+            return position.Current.Is<T>() ? 
+                ParseResult<T>.Successful(position.Next(), position.Current.As<T>()) :
+                ParseResult<T>.Failure(position);
         };
 
         public static Parser<T> IsToken<T>(Func<T, bool> check) => (Position position) =>
@@ -24,7 +23,9 @@ namespace TextProcessing.Functional.Parsers
             if (!check(position.Current.As<T>()))
                 return ParseResult<T>.Failure(position);
 
-            return ParseResult<T>.Successful(position.Next(), position.Current.As<T>());
+            return ParseResult<T>.Successful(
+                position.Next(), 
+                position.Current.As<T>());
         };
 
         public static Parser<T> End<T>(Parser<T> child) => (Position position) =>
