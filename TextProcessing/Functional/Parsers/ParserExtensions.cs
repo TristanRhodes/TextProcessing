@@ -14,10 +14,7 @@ namespace TextProcessing.Functional.Parsers
         public static Parser<T> End<T>(this Parser<T> core) =>
             Parsers.End(core);
 
-        public static ParseResult<T> Parse<T>(this Parser<T> parser, Token[] tokens)
-        {
-            var position = Position.For(tokens);
-            return parser(position);
-        }
+        public static ParseResult<T> Parse<T>(this Parser<T> parser, Token[] tokens) =>
+            parser(Position.For(tokens));
     }
 }

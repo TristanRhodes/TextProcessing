@@ -47,10 +47,9 @@ namespace TextProcessing.OO.Tokenisers
 
         public TokenisationResult Tokenise(string token)
         {
-            if (!regex.IsMatch(token))
-                return TokenisationResult.Fail();
-
-            return TokenisationResult.Success(new JoiningWord());
+            return regex.IsMatch(token) ? 
+                TokenisationResult.Success(new JoiningWord()) :
+                TokenisationResult.Fail();
         }
     }
 
